@@ -1,0 +1,21 @@
+#ifndef JAMTEMPLATE_TEXTURE_MANAGER_INTERFACE_HPP
+#define JAMTEMPLATE_TEXTURE_MANAGER_INTERFACE_HPP
+
+#include <render_target_layer.hpp>
+#include <sdl_2_include.hpp>
+#include <cstddef>
+#include <memory>
+#include <string>
+
+namespace jt {
+class TextureManagerInterface {
+public:
+    virtual ~TextureManagerInterface() = default;
+    virtual std::shared_ptr<SDL_Texture> get(std::string const& str) = 0;
+    virtual void reset() = 0;
+    virtual std::string getFlashName(std::string const& str) = 0;
+    virtual std::size_t getNumberOfTextures() = 0;
+};
+} // namespace jt
+
+#endif // JAMTEMPLATE_TEXTURE_MANAGER_INTERFACE_HPP

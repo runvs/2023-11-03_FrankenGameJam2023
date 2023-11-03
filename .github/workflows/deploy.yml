@@ -1,0 +1,202 @@
+name: Deployment
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+
+jobs:
+  WindowsSFML:
+    runs-on: windows-2019
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.11
+        with:
+          cmake-version: '3.26.x'
+
+      - uses: actions/checkout@v2
+
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: CMake
+        run: cmake -B ${{github.workspace}}/build -DJT_ENABLE_UNITTESTS=OFF -DCMAKE_BUILD_TYPE=Release -DJT_ENABLE_DEBUG=OFF -DJT_ENABLE_DEMOS=OFF -DNOMINMAX=ON .
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        run: cmake --build . --config Release --parallel
+
+      - name: Copy files
+        run: |
+          mkdir ${{github.workspace}}/release
+          mkdir ${{github.workspace}}/release/release_win
+          cp ${{github.workspace}}/build/impl/game/Release/*.exe ${{github.workspace}}/release/release_win/
+          cp -r ${{github.workspace}}/build/impl/game/assets ${{github.workspace}}/release/release_win/
+
+      - name: Create Archive
+        uses: thedoctor0/zip-release@0.6.2
+        with:
+          directory: ${{github.workspace}}/release
+          type: 'zip'
+          filename: 'release_win.zip'
+
+      - name: Release
+        uses: softprops/action-gh-release@v0.1.13
+        with:
+          files: ${{github.workspace}}\release\release_win.zip
+
+  LinuxSFML:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.11
+        with:
+          cmake-version: '3.26.x'
+
+      - uses: actions/checkout@v2
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Set up system libs
+        run: |
+          sudo apt update && \
+          sudo apt-get install -y \
+          xorg-dev \
+          libudev-dev \
+          libopenal-dev \
+          x11-xserver-utils \
+          libfreetype-dev \
+          libudev-dev
+
+      - name: CMake
+        run: cmake -G Ninja -B ${{github.workspace}}/build -DJT_ENABLE_UNITTESTS=OFF -DCMAKE_BUILD_TYPE=Release -DJT_ENABLE_DEMOS=OFF .
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        run: cmake --build . --config Release
+
+      - name: Copy files
+        run: |
+          export RELEASE_NAME=$(echo "${GITHUB_REPOSITORY}" | sed 's/^[^\/]*\///g')
+          mkdir -p ${{github.workspace}}/release/${RELEASE_NAME}_linux
+          cd ${{github.workspace}}/build/impl/game/
+          rsync -avr --exclude="Makefile" --exclude="CMakeFiles" --exclude="*.cmake" . ${{github.workspace}}/release/${RELEASE_NAME}_linux
+          cd ${{github.workspace}}/release
+          tar -czvf ${{github.workspace}}/release/release_linux-x86_64.tar.gz ${RELEASE_NAME}_linux
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{github.workspace}}/release/release_linux-x86_64.tar.gz
+
+  WebSDL:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.12
+        with:
+          cmake-version: '3.26.x'
+
+      - name: Set up gcc
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: 9
+          platform: x64
+
+      - name: Setup emsdk
+        uses: mymindstorm/setup-emsdk@v12
+        with:
+          version: 3.1.46
+
+      - uses: actions/checkout@v2
+
+      - name: CMake
+        run: |
+          emcmake cmake -B ${{github.workspace}}/build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DJT_ENABLE_DEMOS=OFF \
+          -DJT_ENABLE_UNITTESTS=OFF \
+          -DJT_ENABLE_WEB=ON \
+          -DUSE_SFML=OFF .
+
+      - name: BuildFirst
+        working-directory: ${{github.workspace}}/build
+        run: emmake make Box2D
+
+      - name: BuildAll
+        working-directory: ${{github.workspace}}/build
+        run: emmake make -j
+
+      - name: Copy index.html
+        run: cp ${{github.workspace}}/index.html ${{github.workspace}}/build/impl/game/index.html
+
+      - name: Copy files
+        run: |
+          mkdir ${{github.workspace}}/release
+          mkdir ${{github.workspace}}/release/release_web
+          cp ${{github.workspace}}/index.html ${{github.workspace}}/release/release_web/
+          cp ${{github.workspace}}/reset.css ${{github.workspace}}/release/release_web/
+          cp ${{github.workspace}}/build/impl/game/*.data ${{github.workspace}}/release/release_web/
+          cp ${{github.workspace}}/build/impl/game/*.js ${{github.workspace}}/release/release_web/
+          cp ${{github.workspace}}/build/impl/game/*.wasm ${{github.workspace}}/release/release_web/
+
+
+      - name: Create Archive
+        uses: thedoctor0/zip-release@master
+        with:
+          directory: ${{github.workspace}}/release/release_web
+          type: 'zip'
+          filename: 'release_web.zip'
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{github.workspace}}/release/release_web/release_web.zip
+
+  Mac_SFML:
+    runs-on: macos-latest
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.11
+        with:
+          cmake-version: '3.26.x'
+
+      - name: Install dependencies
+        run: |
+          brew install cmake ninja
+
+      - uses: actions/checkout@v2
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: ${{ github.job }}-${{ matrix.os }}
+          max-size: 200M
+
+      - name: CMake
+        run: |
+          cmake \
+          -DJT_ENABLE_DEMOS=OFF \
+          -DJT_ENABLE_UNITTESTS=OFF \
+          -DCMAKE_BUILD_TYPE=Release \
+          -B ${{github.workspace}}/build .
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        run: cmake --build . --config Release
+
+      - name: Copy files
+        run: |
+          export RELEASE_NAME=$(echo "${GITHUB_REPOSITORY}" | sed 's/^[^\/]*\///g')
+          mkdir -p ${{github.workspace}}/release/${RELEASE_NAME}_mac
+          cd ${{github.workspace}}/build/impl/game/
+          rsync -avr --exclude="Makefile" --exclude="CMakeFiles" --exclude="*.cmake" . ${{github.workspace}}/release/${RELEASE_NAME}_mac
+          cd ${{github.workspace}}/release
+          tar -czvf ${{github.workspace}}/release/release_mac.tar.gz ${RELEASE_NAME}_mac
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{github.workspace}}/release/release_mac.tar.gz

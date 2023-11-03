@@ -1,0 +1,79 @@
+name: Performance Measurement
+
+on:
+  push:
+    branches: [ master ]
+
+permissions:
+  # deployments permission to deploy GitHub pages website
+  deployments: write
+  # contents permission to update benchmark contents in gh-pages branch
+  contents: write
+
+jobs:
+  PerformanceBenchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.11
+        with:
+          cmake-version: '3.26.x'
+
+      - name: Set up gcc
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: 9
+          platform: x64
+
+      - name: Set up system libs
+        run: |
+          sudo apt-get install -y \
+          libsfml-dev \
+          jackd \
+          libx11-dev \
+          xorg-dev \
+          freeglut3-dev \
+          libudev-dev \
+          libopenal-dev \
+          libvorbis-dev \
+          libfreetype-dev \
+          libflac-dev
+
+      - uses: actions/checkout@v2
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}-${{ matrix.os }}-${{ matrix.type }}
+          max-size: 100M
+
+      - name: CMake
+        run: |
+          cmake \
+          -G Ninja \
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DJT_ENABLE_DEBUG=OFF \
+          -DJT_ENABLE_PERFORMANCETESTS=ON .
+
+      - name: Build
+        run: ninja -j 4 jt_performance
+
+      - name: Execute Performance Test
+        working-directory: ${{github.workspace}}/test/integration/performance
+        run: xvfb-run ./jt_performance --benchmark_format=json --benchmark_out=benchmark_result.json
+
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          # What benchmark tool the output.txt came from
+          tool: 'googlecpp'
+          # Where the output from the benchmark tool is stored
+          output-file-path: ${{github.workspace}}/test/integration/performance/benchmark_result.json
+          # Workflow will fail when an alert happens
+          fail-on-alert: true
+          # Access token to deploy GitHub Pages branch
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Push and deploy GitHub pages branch automatically
+          auto-push: true

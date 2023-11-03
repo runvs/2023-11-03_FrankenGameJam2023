@@ -1,0 +1,222 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  LinuxSFML:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.11
+        with:
+          cmake-version: '3.26.x'
+
+      - name: Set up gcc
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: 9
+          platform: x64
+
+      - name: Set up system libs
+        run: |
+          sudo apt-get install -y \
+          jackd \
+          xorg-dev \
+          libudev-dev \
+          libopenal-dev \
+          x11-xserver-utils \
+          libfreetype-dev \
+          libudev-dev
+
+      - uses: actions/checkout@v2
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}-${{ matrix.os }}-${{ matrix.type }}
+          max-size: 200M
+
+      - name: CMake
+        run: |
+          cmake \
+          -G Ninja \
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+          -DJT_ENABLE_AUDIO_TESTS=OFF \
+          -B ${{github.workspace}}/build .
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        run: ninja
+
+      - name: StartJack
+        run: jackd -d dummy &
+
+# constantly giving errors about x11 display failed in ci
+#      - name: Test
+#        run: xvfb-run ./jt_tests
+#        working-directory: ${{github.workspace}}/build/test/unit/jt_test
+
+  LinuxSDL:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.11
+        with:
+          cmake-version: '3.26.x'
+
+      - name: Set up gcc
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: 9
+          platform: x64
+
+      - name: Set up SDL and jack
+        run: |
+          sudo apt-get install -y \
+          libsdl2-dev \
+          libsdl2-ttf-dev \
+          libsdl2-image-dev
+
+      - uses: actions/checkout@v2
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}-${{ matrix.os }}-${{ matrix.type }}
+          max-size: 200M
+
+      - name: CMake
+        run: |
+          cmake \
+          -G Ninja \
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+          -DUSE_SFML=OFF \
+          -DJT_ENABLE_AUDIO_TESTS=OFF \
+          -B ${{github.workspace}}/build .
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        run: ninja
+
+      - name: Test
+        run: xvfb-run ./jt_tests
+        working-directory: ${{github.workspace}}/build/test/unit/jt_test
+
+  WindowsSFML:
+    runs-on: windows-2019
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.11
+        with:
+          cmake-version: '3.26.x'
+
+      - uses: actions/checkout@v2
+
+      - name: CMake
+        run: cmake -B ${{github.workspace}}/build -DJT_ENABLE_AUDIO_TESTS=OFF .
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        run: cmake --build . --parallel
+
+      - name: Test
+        working-directory: ${{github.workspace}}/build/test/unit/jt_test
+        run: Debug\jt_tests.exe --gtest_shuffle
+
+  WindowsSDL:
+    runs-on: windows-2019
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.11
+        with:
+          cmake-version: '3.26.x'
+
+      - uses: actions/checkout@v2
+
+      - name: CMake
+        run: cmake -B ${{github.workspace}}/build -DJT_ENABLE_AUDIO_TESTS=OFF -DUSE_SFML=OFF .
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        run: cmake --build . --parallel
+
+      - name: Test
+        working-directory: ${{github.workspace}}/build/test/unit/jt_test
+        run: Debug\jt_tests.exe --gtest_shuffle
+  WebSDL:
+    runs-on: ubuntu-latest
+    env:
+      EMCC_CCACHE: 1
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.12
+        with:
+          cmake-version: '3.26.x'
+
+      - name: Set up gcc
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: 9
+          platform: x64
+
+      - name: Setup emsdk
+        uses: mymindstorm/setup-emsdk@v12
+        with:
+          version: 3.1.46
+
+      - uses: actions/checkout@v2
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}-${{ matrix.os }}-${{ matrix.type }}
+          max-size: 200M
+
+      - name: CMake
+        run: |
+          emcmake cmake -B ${{github.workspace}}/build \
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+          -DJT_ENABLE_DEMOS=ON \
+          -DJT_ENABLE_UNITTESTS=OFF \
+          -DJT_ENABLE_WEB=ON \
+          -DUSE_SFML=OFF .
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        run: emmake make jt_demos -j
+
+  Mac_SFML:
+    runs-on: macos-latest
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.11
+        with:
+          cmake-version: '3.26.x'
+
+      - name: Install dependencies
+        run: |
+          brew install cmake ninja
+
+      - uses: actions/checkout@v2
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: ${{ github.job }}-${{ matrix.os }}
+          max-size: 200M
+
+      - name: CMake
+        run: |
+          cmake \
+          -DJT_ENABLE_AUDIO_TESTS=OFF \
+          -B ${{github.workspace}}/build .
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        run: make jt_tests jt_demos -j
