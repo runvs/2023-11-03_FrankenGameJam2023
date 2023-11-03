@@ -10,29 +10,29 @@
 namespace {
 std::string selectWalkAnimation(jt::Vector2f const& velocity)
 {
-    std::string walkAnimationName { "idle" };
+    auto a = jt::MathHelper::angleOf(velocity);
 
-    if (jt::MathHelper::lengthSquared(velocity) < 2) {
-        walkAnimationName = "idle";
-    } else if (abs(velocity.x) > abs(velocity.y)) {
-        if (velocity.x > 0) {
-            walkAnimationName = "right";
-        } else {
-            walkAnimationName = "left";
-        }
-    } else {
-        if (velocity.y > 0 && abs(velocity.x) < 0.1f) {
-            walkAnimationName = "down";
-        } else if (velocity.y > 0 && velocity.x > 0) {
-            walkAnimationName = "down_right";
-        } else if (velocity.y > 0 && velocity.x < 0) {
-            walkAnimationName = "down_left";
-        } else {
-            walkAnimationName = "up";
-        }
+    std::cout << velocity.x << " " << velocity.y << " " << a << "\n";
+
+    if (a > 0 && a < 22.5) {
+        return "right";
+    } else if (a < 22.5f + 45 * 1) {
+        return "up-right";
+    } else if (a < 22.5f + 45 * 2) {
+        return "up";
+    } else if (a < 22.5f + 45 * 3) {
+        return "up-left";
+    } else if (a < 22.5f + 45 * 4) {
+        return "left";
+    } else if (a < 22.5f + 45 * 5) {
+        return "down-left";
+    } else if (a < 22.5f + 45 * 6) {
+        return "down";
+    } else if (a < 22.5f + 45 * 7) {
+        return "down-right";
+    } else if (a < 360) {
+        return "right";
     }
-
-    return walkAnimationName;
 }
 } // namespace
 
@@ -54,7 +54,6 @@ void Player::doUpdate(float const elapsed)
 {
     m_input->updateMovement(*m_b2Object);
     m_graphics->setPosition(m_b2Object->getPosition());
-
     m_graphics->setAnimationIfNotSet(selectWalkAnimation(m_b2Object->getVelocity()));
     m_graphics->updateGraphics(elapsed);
 }

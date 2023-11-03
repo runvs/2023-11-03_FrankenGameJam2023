@@ -10,8 +10,8 @@ GraphicsComponentImpl::GraphicsComponentImpl(std::shared_ptr<jt::GameInterface> 
 void GraphicsComponentImpl::createAnimation(jt::TextureManagerInterface& textureManager)
 {
     m_animation = std::make_shared<jt::Animation>();
-    m_animation->loadFromJson("assets/Pilz.json", textureManager);
-    m_animation->play("idle");
+    m_animation->loadFromAseprite("assets/ship.aseprite", textureManager);
+    m_animation->play("right");
 }
 
 void GraphicsComponentImpl::updateGraphics(float elapsed) { m_animation->update(elapsed); }
@@ -36,14 +36,6 @@ void GraphicsComponentImpl::flash(float time, jt::Color const& color)
 bool GraphicsComponentImpl::setAnimationIfNotSet(std::string const& newAnimationName)
 {
     std::string const currentAnimationName = m_animation->getCurrentAnimationName();
-
-    if (currentAnimationName == "die") {
-        return true;
-    }
-
-    if (currentAnimationName == "hurt" && newAnimationName == "idle") {
-        return true;
-    }
 
     if (currentAnimationName != newAnimationName) {
         m_animation->play(newAnimationName);
