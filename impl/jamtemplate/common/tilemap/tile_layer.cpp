@@ -1,7 +1,6 @@
 ﻿#include "tile_layer.hpp"
 #include <drawable_helpers.hpp>
 #include <shape.hpp>
-#include <limits>
 #include <memory>
 
 jt::tilemap::TileLayer::TileLayer(std::vector<jt::tilemap::TileInfo> const& tileInfo,
@@ -117,14 +116,12 @@ jt::Vector2f jt::tilemap::TileLayer::getPosition() const { return m_position; }
 
 jt::Rectf jt::tilemap::TileLayer::getGlobalBounds() const
 {
-    return jt::Rectf { getPosition().x, getPosition().y, std::numeric_limits<float>::max(),
-        std::numeric_limits<float>::max() };
+    return jt::Rectf { getPosition().x, getPosition().y, m_mapSizeInPixel.x, m_mapSizeInPixel.y };
 }
 
 jt::Rectf jt::tilemap::TileLayer::getLocalBounds() const
 {
-    return jt::Rectf { getPosition().x, getPosition().y, std::numeric_limits<float>::max(),
-        std::numeric_limits<float>::max() };
+    return jt::Rectf { getPosition().x, getPosition().y, m_mapSizeInPixel.x, m_mapSizeInPixel.y };
 }
 
 void jt::tilemap::TileLayer::setScale(jt::Vector2f const& scale) { m_scale = scale; }
