@@ -24,6 +24,11 @@ void StateGame::onCreate()
     m_overlay = std::make_shared<jt::tilemap::TileLayer>(
         loader.loadTilesFromLayer("overlay", textureManager()));
 
+    m_waves = std::make_shared<jt::Waves>("assets/waves.aseprite",
+        jt::Rectf {
+            0.0f, 0.0f, m_tilemap->getMapSizeInPixel().x, m_tilemap->getMapSizeInPixel().y },
+        std::vector<jt::Rectf> {}, 100);
+    add(m_waves);
     createPlayer();
 
     createHarbors(loader);
@@ -108,7 +113,7 @@ void StateGame::onDraw() const
     drawObjects();
 
     m_vignette->draw();
-    y m_hud->draw();
+    m_hud->draw();
 }
 
 void StateGame::endGame()
