@@ -9,23 +9,23 @@ namespace {
 std::string selectWalkAnimation(float const a)
 {
     if (a < 22.5) {
-        return "up";
+        return "right";
     } else if (a < 22.5f + 45 * 1) {
         return "up-right";
     } else if (a < 22.5f + 45 * 2) {
-        return "right";
+        return "up";
     } else if (a < 22.5f + 45 * 3) {
-        return "down-right";
+        return "up-left";
     } else if (a < 22.5f + 45 * 4) {
-        return "down";
+        return "left";
     } else if (a < 22.5f + 45 * 5) {
         return "down-left";
     } else if (a < 22.5f + 45 * 6) {
-        return "left";
+        return "down";
     } else if (a < 22.5f + 45 * 7) {
-        return "up-left";
+        return "down-right";
     }
-    return "up";
+    return "right";
 }
 } // namespace
 
@@ -78,6 +78,8 @@ void Player::doDraw() const
 GraphicsComponentInterface& Player::getGraphics() { return *m_graphics; }
 
 CargoComponent& Player::getCargo() { return m_cargo; }
+
+jt::Vector2f Player::getVelocity() const { return m_b2Object->getVelocity(); }
 
 void Player::clampPositionOnMap(jt::Vector2f const& mapSize)
 {
