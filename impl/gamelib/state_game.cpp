@@ -23,7 +23,9 @@ void StateGame::onCreate()
     loadLevelCollisions(loader);
 
     createPlayer();
+
     createHarbors(loader);
+    spawnMonkey();
 
     m_vignette = std::make_shared<jt::Vignette>(GP::GetScreenSize());
     add(m_vignette);
@@ -58,6 +60,20 @@ void StateGame::createHarbors(jt::tilemap::TilesonLoader& loader)
     }
 }
 
+void StateGame::spawnMonkey()
+{
+    if (m_monkeys == nullptr)
+    {
+        m_monkeys = std::make_shared<jt::ObjectGroup<Monkey>>();
+    }
+    add(m_monkeys);
+
+    // TODO spawn monkeys randomly over time
+    auto const monkey = std::make_shared<Monkey>(m_world, GP::GetScreenSize() * 0.75f);
+    add(monkey);
+    m_monkeys->push_back(monkey);
+}
+
 void StateGame::onUpdate(float const elapsed)
 {
     if (m_running) {
@@ -70,6 +86,7 @@ void StateGame::onUpdate(float const elapsed)
 
         updateCamera(elapsed);
         updateHarbors(elapsed);
+        updateMonkeys();
     }
 
     m_tilemap->update(elapsed);
@@ -125,6 +142,15 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                 }
             }
         }
+    }
+}
+
+void StateGame::updateMonkeys()
+{
+    auto const playerPos = m_player->getPosition();
+    for (auto const& m : *m_monkeys) {
+        auto monkey = m.lock();
+        monkey->updatePlayerPosition(playerPos);
     }
 }
 
