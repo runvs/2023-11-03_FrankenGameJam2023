@@ -45,6 +45,8 @@ private:
     int m_scoreP1 { 0 };
     int m_scoreP2 { 0 };
 
+    jt::Vector2f m_lastFrameCameraOffset = jt::Vector2f {0.0f, 0.0f};
+
     void onCreate() override;
     void onEnter() override;
     void onUpdate(float const elapsed) override;

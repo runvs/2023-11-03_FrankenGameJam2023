@@ -156,17 +156,24 @@ void StateGame::updateMonkeys()
 
 void StateGame::updateCamera(float const elapsed)
 {
-    auto speedOffset = m_player->getVelocity();
-    if (jt::MathHelper::length(speedOffset) > 64) {
-        jt::MathHelper::normalizeMe(speedOffset);
-        speedOffset.x *= 64.0f;
-        speedOffset.y *= 64.0f;
+    auto velocity = m_player->getVelocity();
+    float speedFactor;
+    if (jt::MathHelper::length(velocity) > 64) {
+        speedFactor = 1;
+    } else {
+        speedFactor = jt::MathHelper::length(velocity) / 64;
     }
 
-    auto camPos = m_player->getPosition() + speedOffset - GP::GetScreenSize() * 0.5f;
+    jt::MathHelper::normalizeMe(velocity);
+    velocity = velocity * speedFactor * 64.0f;
+    velocity = velocity * 0.025f + m_lastFrameCameraOffset * 0.975f;
+    m_lastFrameCameraOffset = velocity;
+
+    auto center = m_player->getPosition() - GP::GetScreenSize() * 0.5f;
+    auto targetPosition = center + velocity;
     jt::Vector2f const camPosMax { m_tilemap->getMapSizeInPixel() - GP::GetScreenSize() };
-    camPos = jt::MathHelper::clamp(camPos, jt::Vector2f { 0.0f, 0.0f }, camPosMax);
-    getGame()->gfx().camera().setCamOffset(camPos);
+    targetPosition = jt::MathHelper::clamp(targetPosition, jt::Vector2f { 0.0f, 0.0f }, camPosMax);
+    getGame()->gfx().camera().setCamOffset(targetPosition);
 }
 
 void StateGame::loadLevelCollisions(jt::tilemap::TilesonLoader& loader)
