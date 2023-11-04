@@ -51,6 +51,7 @@ Player::Player(std::shared_ptr<jt::Box2DWorldInterface> world)
     b2BodyDef def {};
     def.type = b2BodyType::b2_dynamicBody;
     def.linearDamping = 1.0;
+    def.angularDamping = 1.0;
     m_b2Object = std::make_unique<jt::Box2DObject>(world, &def);
 }
 
@@ -65,7 +66,7 @@ void Player::doCreate()
 
 void Player::doUpdate(float const elapsed)
 {
-    m_input->updateMovement(*m_b2Object);
+    m_input->updateMovement(*m_b2Object, elapsed);
     m_graphics->setPosition(m_b2Object->getPosition());
     m_graphics->setAnimationIfNotSet(selectWalkAnimation(m_b2Object->getVelocity()));
     m_graphics->updateGraphics(elapsed);

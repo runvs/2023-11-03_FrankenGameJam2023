@@ -13,6 +13,7 @@ public:
 
 private:
     std::shared_ptr<jt::KeyboardInterface> m_keyboard { nullptr };
+    float rotationAngle = 90.0f;
 };
 
 #endif // GAME_PLAYER_INPUT_COMPONENT_HPP
