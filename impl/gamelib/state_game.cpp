@@ -4,6 +4,7 @@
 #include <game_interface.hpp>
 #include <game_properties.hpp>
 #include <hud/hud.hpp>
+#include <math_helper.hpp>
 #include <screeneffects/vignette.hpp>
 #include <shape.hpp>
 #include <state_menu.hpp>
@@ -25,6 +26,8 @@ void StateGame::onCreate()
 
     createPlayer();
 
+    createHarbors();
+
     m_vignette = std::make_shared<jt::Vignette>(GP::GetScreenSize());
     add(m_vignette);
     m_hud = std::make_shared<Hud>();
@@ -42,6 +45,17 @@ void StateGame::createPlayer()
     add(m_player);
 }
 
+void StateGame::createHarbors()
+{
+
+    m_harbors = std::make_shared<jt::ObjectGroup<Harbor>>();
+    add(m_harbors);
+
+    auto const harbor = std::make_shared<Harbor>(GP::GetScreenSize() * 0.5f);
+    add(harbor);
+    m_harbors->push_back(harbor);
+}
+
 void StateGame::onUpdate(float const elapsed)
 {
     if (m_running) {
@@ -51,6 +65,8 @@ void StateGame::onUpdate(float const elapsed)
             && getGame()->input().keyboard()->pressed(jt::KeyCode::Escape)) {
             endGame();
         }
+
+        updateHarbors(elapsed);
     }
 
     m_background->update(elapsed);
@@ -78,3 +94,23 @@ void StateGame::endGame()
 }
 
 std::string StateGame::getName() const { return "State Game"; }
+
+void StateGame::updateHarbors(float const /*elapsed*/)
+{
+    auto const playerPos = m_player->getPosition();
+    for (auto const& h : *m_harbors) {
+        auto harbor = h.lock();
+        auto const harborPos = harbor->getPosition();
+        auto const l = jt::MathHelper::distanceBetween(harborPos, playerPos);
+        if (l < GP::TileSizeInPixel()) {
+            m_player->getGraphics().getDrawable()->flash(0.1f, jt::colors::Yellow);
+            if (harbor->isOffering()) {
+                m_player->getCargo().addFruit(harbor->getFruitOffering());
+                harbor->pickUpFruit();
+            } else {
+                // TODO check if special fruit requested
+                m_player->getCargo().removeFruit("");
+            }
+        }
+    }
+}

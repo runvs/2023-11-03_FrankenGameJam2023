@@ -51,3 +51,5 @@ std::string GraphicsComponentImpl::getCurrentAnimation() const
 {
     return m_animation->getCurrentAnimationName();
 }
+
+std::shared_ptr<jt::DrawableInterface> GraphicsComponentImpl::getDrawable() { return m_animation; }

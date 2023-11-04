@@ -1,6 +1,7 @@
 #ifndef JAMTEMPLATE_GRAPHICS_COMPONENT_INTERFACE_HPP
 #define JAMTEMPLATE_GRAPHICS_COMPONENT_INTERFACE_HPP
 
+#include "graphics/drawable_interface.hpp"
 #include <color/color.hpp>
 #include <graphics/render_target_interface.hpp>
 #include <vector.hpp>
@@ -16,6 +17,8 @@ public:
     virtual bool setAnimationIfNotSet(std::string const& newAnimationName) = 0;
 
     virtual std::string getCurrentAnimation() const = 0;
+
+    virtual std::shared_ptr<jt::DrawableInterface> getDrawable() = 0;
 };
 
 #endif // JAMTEMPLATE_GRAPHICS_COMPONENT_INTERFACE_HPP

@@ -53,6 +53,8 @@ Player::Player(std::shared_ptr<jt::Box2DWorldInterface> world)
     m_b2Object = std::make_unique<jt::Box2DObject>(world, &def);
 }
 
+jt::Vector2f Player::getPosition() const { return m_b2Object->getPosition(); }
+
 void Player::doCreate()
 {
     m_input = std::make_unique<InputComponentImpl>(getGame()->input().keyboard());
@@ -69,3 +71,7 @@ void Player::doUpdate(float const elapsed)
 }
 
 void Player::doDraw() const { m_graphics->draw(renderTarget()); }
+
+GraphicsComponentInterface& Player::getGraphics() { return *m_graphics; }
+
+CargoComponent& Player::getCargo() { return m_cargo; }
