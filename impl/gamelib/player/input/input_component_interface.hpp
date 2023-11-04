@@ -8,6 +8,7 @@ public:
     virtual ~InputComponentInterface() = default;
 
     virtual void updateMovement(InputTargetInterface& target, float const elapsed) = 0;
+    virtual float getRotationAngle() = 0;
 };
 
 #endif // JAMTEMPLATE_INPUT_COMPONENT_INTERFACE_HPP

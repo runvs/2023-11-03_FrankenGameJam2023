@@ -9,7 +9,8 @@ class InputComponentImpl : public InputComponentInterface {
 public:
     explicit InputComponentImpl(std::shared_ptr<jt::KeyboardInterface> keyboardInterface);
 
-    void updateMovement(InputTargetInterface& player) override;
+    void updateMovement(InputTargetInterface& player, float const elapsed) override;
+    float getRotationAngle() override;
 
 private:
     std::shared_ptr<jt::KeyboardInterface> m_keyboard { nullptr };
