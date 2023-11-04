@@ -156,38 +156,24 @@ void StateGame::updateMonkeys()
 
 void StateGame::updateCamera(float const elapsed)
 {
-    float const camMovementSpeed = 60;
-    auto playerPositionOnScreen = m_player->getGraphics().getDrawable()->getScreenPosition();
-    if (playerPositionOnScreen.x < GP::ScreenSizeScrollBound() * 1.5) {
-        getGame()->gfx().camera().move(jt::Vector2f { -camMovementSpeed * elapsed, 0.0f });
-    } else if (playerPositionOnScreen.x + 8
-        > GP::GetScreenSize().x - GP::ScreenSizeScrollBound() * 1.5) {
-        getGame()->gfx().camera().move(jt::Vector2f { camMovementSpeed * elapsed, 0.0f });
+    auto velocity = m_player->getVelocity();
+    float speedFactor;
+    if (jt::MathHelper::length(velocity) > GP::cameraDragDistance) {
+        speedFactor = 1;
+    } else {
+        speedFactor = jt::MathHelper::length(velocity) / GP::cameraDragDistance;
     }
 
-    if (playerPositionOnScreen.y < GP::ScreenSizeScrollBound() * 1.5) {
-        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, -camMovementSpeed * elapsed });
-    } else if (playerPositionOnScreen.y + 8
-        > GP::GetScreenSize().y - GP::ScreenSizeScrollBound() * 1.5) {
-        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, camMovementSpeed * elapsed });
-    }
+    jt::MathHelper::normalizeMe(velocity);
+    velocity = velocity * speedFactor * GP::cameraDragDistance;
+    velocity = velocity * GP::cameraSmoothFactor + m_lastFrameCameraOffset * (1 - GP::cameraSmoothFactor);
+    m_lastFrameCameraOffset = velocity;
 
-    if (playerPositionOnScreen.x < GP::ScreenSizeScrollBound()) {
-        getGame()->gfx().camera().move(jt::Vector2f { -camMovementSpeed * elapsed, 0.0f });
-    } else if (playerPositionOnScreen.x + 8 > GP::GetScreenSize().x - GP::ScreenSizeScrollBound()) {
-        getGame()->gfx().camera().move(jt::Vector2f { camMovementSpeed * elapsed, 0.0f });
-    }
-
-    if (playerPositionOnScreen.y < GP::ScreenSizeScrollBound()) {
-        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, -camMovementSpeed * elapsed });
-    } else if (playerPositionOnScreen.y + 8 > GP::GetScreenSize().y - GP::ScreenSizeScrollBound()) {
-        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, camMovementSpeed * elapsed });
-    }
-
-    auto camPos = getGame()->gfx().camera().getCamOffset();
+    auto center = m_player->getPosition() - GP::GetScreenSize() * 0.5f;
+    auto targetPosition = center + velocity;
     jt::Vector2f const camPosMax { m_tilemap->getMapSizeInPixel() - GP::GetScreenSize() };
-    camPos = jt::MathHelper::clamp(camPos, jt::Vector2f { 0.0f, 0.0f }, camPosMax);
-    getGame()->gfx().camera().setCamOffset(camPos);
+    targetPosition = jt::MathHelper::clamp(targetPosition, jt::Vector2f { 0.0f, 0.0f }, camPosMax);
+    getGame()->gfx().camera().setCamOffset(targetPosition);
 }
 
 void StateGame::loadLevelCollisions(jt::tilemap::TilesonLoader& loader)

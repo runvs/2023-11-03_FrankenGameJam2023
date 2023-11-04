@@ -16,6 +16,7 @@ public:
     Player(std::shared_ptr<jt::Box2DWorldInterface> world);
 
     jt::Vector2f getPosition() const;
+    jt::Vector2f getVelocity() const;
 
     GraphicsComponentInterface& getGraphics();
     CargoComponent& getCargo();
