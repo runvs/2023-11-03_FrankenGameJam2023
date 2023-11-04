@@ -38,6 +38,7 @@ private:
     std::shared_ptr<jt::ObjectGroup<Monkey>> m_monkeys;
     std::shared_ptr<jt::tilemap::TileLayer> m_tilemap {};
     std::vector<std::shared_ptr<jt::Box2DObject>> m_colliders {};
+    std::vector<jt::Rectf> m_tileCollisionRects {};
 
     bool m_running { true };
     bool m_hasEnded { false };
@@ -56,6 +57,7 @@ private:
     void createPlayer();
     void createHarbors(jt::tilemap::TilesonLoader& loader);
     void spawnMonkey();
+    bool isValidMonkeySpawnPosition(jt::Vector2f position);
     void updateHarbors(float const elapsed);
     void updateMonkeys();
     void updateCamera(float const elapsed);
