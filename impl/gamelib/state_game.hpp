@@ -15,6 +15,10 @@ namespace jt {
 class Shape;
 class Sprite;
 class Vignette;
+
+namespace tilemap {
+class TilesonLoader;
+}
 } // namespace jt
 
 class Hud;
@@ -24,13 +28,14 @@ public:
     std::string getName() const override;
 
 private:
-    std::shared_ptr<jt::Shape> m_background;
     std::shared_ptr<jt::Vignette> m_vignette;
     std::shared_ptr<Hud> m_hud;
     std::shared_ptr<jt::Box2DWorldInterface> m_world { nullptr };
     std::shared_ptr<Player> m_player { nullptr };
+
     std::shared_ptr<jt::ObjectGroup<Harbor>> m_harbors;
     std::shared_ptr<jt::tilemap::TileLayer> m_tilemap {};
+    std::vector<std::shared_ptr<jt::Box2DObject>> m_colliders {};
 
     bool m_running { true };
     bool m_hasEnded { false };
@@ -48,6 +53,7 @@ private:
     void createHarbors();
     void updateHarbors(float const elapsed);
     void updateCamera(float const elapsed);
+    void loadLevelCollisions(jt::tilemap::TilesonLoader& loader);
 };
 
 #endif

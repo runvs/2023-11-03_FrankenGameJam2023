@@ -14,24 +14,15 @@ void StateGame::onCreate()
 {
     m_world = std::make_shared<jt::Box2DWorldImpl>(jt::Vector2f { 0.0f, 0.0f });
 
-    float const w = static_cast<float>(GP::GetWindowSize().x);
-    float const h = static_cast<float>(GP::GetWindowSize().y);
-
     using jt::Shape;
-
-    m_background = std::make_shared<Shape>();
-    m_background->makeRect({ w, h }, textureManager());
-    m_background->setColor(GP::PaletteBackground());
-    m_background->setIgnoreCamMovement(true);
-    m_background->update(0.0f);
 
     jt::tilemap::TilesonLoader loader { getGame()->cache().getTilemapCache(),
         "assets/test_map.json" };
     m_tilemap = std::make_shared<jt::tilemap::TileLayer>(
         loader.loadTilesFromLayer("ground", textureManager()));
+    loadLevelCollisions(loader);
 
     createPlayer();
-
     createHarbors();
 
     m_vignette = std::make_shared<jt::Vignette>(GP::GetScreenSize());
@@ -81,14 +72,12 @@ void StateGame::onUpdate(float const elapsed)
         updateHarbors(elapsed);
     }
 
-    m_background->update(elapsed);
     m_tilemap->update(elapsed);
     m_vignette->update(elapsed);
 }
 
 void StateGame::onDraw() const
 {
-    m_background->draw(renderTarget());
     m_tilemap->draw(renderTarget());
     drawObjects();
     m_vignette->draw();
@@ -164,4 +153,27 @@ void StateGame::updateCamera(float const elapsed)
     }
     // TODO max position
     getGame()->gfx().camera().setCamOffset(camPos);
+}
+
+void StateGame::loadLevelCollisions(jt::tilemap::TilesonLoader& loader)
+{
+    auto tileCollisions = loader.loadCollisionsFromLayer("ground");
+
+    tileCollisions.refineColliders(16);
+    for (auto const& r : tileCollisions.getRects()) {
+        b2BodyDef bodyDef;
+        bodyDef.fixedRotation = true;
+        bodyDef.type = b2_staticBody;
+        bodyDef.position.Set(r.left + r.width / 2.0f, r.top + r.height / 2.0f);
+
+        b2FixtureDef fixtureDef;
+        b2PolygonShape boxCollider {};
+        boxCollider.SetAsBox(r.width / 2.0f, r.height / 2.0f);
+        fixtureDef.shape = &boxCollider;
+
+        auto collider = std::make_shared<jt::Box2DObject>(m_world, &bodyDef);
+        collider->getB2Body()->CreateFixture(&fixtureDef);
+
+        m_colliders.push_back(collider);
+    }
 }
