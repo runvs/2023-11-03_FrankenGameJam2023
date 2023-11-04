@@ -12,9 +12,14 @@ public:
     void updateMovement(InputTargetInterface& player, float const elapsed) override;
     float getRotationAngle() override;
 
+    float getBoostNitro() const override;
+
 private:
     std::shared_ptr<jt::KeyboardInterface> m_keyboard { nullptr };
-    float rotationAngle = 90.0f;
+    float rotationAngle { 90.0f };
+
+    float m_boostNitro { 1.0f };
+    bool m_boostInRefill { false };
 };
 
 #endif // GAME_PLAYER_INPUT_COMPONENT_HPP
