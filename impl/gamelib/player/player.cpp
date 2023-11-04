@@ -10,8 +10,6 @@
 namespace {
 std::string selectWalkAnimation(float const a)
 {
-    std::cout << a << std::endl;
-
     if (a < 22.5) {
         return "up";
     } else if (a < 22.5f + 45 * 1) {
