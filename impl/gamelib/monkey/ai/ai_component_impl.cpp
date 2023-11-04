@@ -1,37 +1,28 @@
 #include "ai_component_impl.h"
+#include "game_properties.hpp"
 #include "math_helper.hpp"
-#include <iostream>
+#include "lerp.hpp"
 
 float AiComponentImpl::getRotationAngle() { return rotationAngle; }
 
 void AiComponentImpl::update(AiTargetInterface& target, float const elapsed)
 {
-    // TODO: if player enters range, do something silly
-    auto const movementSpeed = 100;
-    auto const rotationSpeed = 10000;
-    auto const chaseDistance = 300;
-
     auto const diff = playerPos - target.getPosition();
     auto const distanceToPlayer = jt::MathHelper::distanceBetween(playerPos, target.getPosition());
-    if (distanceToPlayer > chaseDistance) {
+    if (distanceToPlayer > GP::monkeyChaseDistance) {
         return;
     }
 
     auto const targetRotation = jt::MathHelper::angleOf(diff);
 
-    // auto const angularDifference = targetRotation - rotationAngle;
-    // if (std::abs(angularDifference) > 1) {
-    //     if (angularDifference > 0) {
-    //         rotationAngle += rotationSpeed * elapsed;
-    //     } else {
-    //         rotationAngle -= rotationSpeed * elapsed;
-    //     };
-    // }
-
-    rotationAngle = targetRotation;
+    if (targetRotation - rotationAngle > 0) {
+        rotationAngle = std::clamp(rotationAngle + GP::monkeyRotationSpeed * elapsed, rotationAngle, targetRotation);
+    } else {
+        rotationAngle = std::clamp(rotationAngle - GP::monkeyRotationSpeed * elapsed, targetRotation, rotationAngle);
+    };
 
     auto const force
-        = jt::MathHelper::rotateBy(jt::Vector2f { movementSpeed, 0.0f }, -rotationAngle);
+        = jt::MathHelper::rotateBy(jt::Vector2f { GP::monkeyForwardStrength, 0.0f }, -rotationAngle);
     target.addForceToCenter(force);
 }
 
