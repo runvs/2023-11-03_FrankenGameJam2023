@@ -1,6 +1,7 @@
 #ifndef JAMTEMPLATE_PLAYER_HPP
 #define JAMTEMPLATE_PLAYER_HPP
 
+#include "bar.hpp"
 #include <box2dwrapper/box2d_object.hpp>
 #include <game_object.hpp>
 #include <player/cargo_component.hpp>
@@ -25,6 +26,8 @@ private:
     std::unique_ptr<SoundComponentInterface> m_sound { nullptr };
 
     std::unique_ptr<jt::Box2DObject> m_b2Object { nullptr };
+
+    std::shared_ptr<jt::Bar> m_NitroBar { nullptr };
 
     CargoComponent m_cargo;
 

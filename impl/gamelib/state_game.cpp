@@ -130,8 +130,22 @@ void StateGame::updateHarbors(float const /*elapsed*/)
 
 void StateGame::updateCamera(float const elapsed)
 {
-    float const camMovementSpeed = 50;
+    float const camMovementSpeed = 60;
     auto playerPositionOnScreen = m_player->getGraphics().getDrawable()->getScreenPosition();
+    if (playerPositionOnScreen.x < GP::ScreenSizeScrollBound() * 1.5) {
+        getGame()->gfx().camera().move(jt::Vector2f { -camMovementSpeed * elapsed, 0.0f });
+    } else if (playerPositionOnScreen.x + 8
+        > GP::GetScreenSize().x - GP::ScreenSizeScrollBound() * 1.5) {
+        getGame()->gfx().camera().move(jt::Vector2f { camMovementSpeed * elapsed, 0.0f });
+    }
+
+    if (playerPositionOnScreen.y < GP::ScreenSizeScrollBound() * 1.5) {
+        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, -camMovementSpeed * elapsed });
+    } else if (playerPositionOnScreen.y + 8
+        > GP::GetScreenSize().y - GP::ScreenSizeScrollBound() * 1.5) {
+        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, camMovementSpeed * elapsed });
+    }
+
     if (playerPositionOnScreen.x < GP::ScreenSizeScrollBound()) {
         getGame()->gfx().camera().move(jt::Vector2f { -camMovementSpeed * elapsed, 0.0f });
     } else if (playerPositionOnScreen.x + 8 > GP::GetScreenSize().x - GP::ScreenSizeScrollBound()) {
@@ -147,7 +161,6 @@ void StateGame::updateCamera(float const elapsed)
     auto camPos = getGame()->gfx().camera().getCamOffset();
     jt::Vector2f const camPosMax { m_tilemap->getMapSizeInPixel() - GP::GetScreenSize() };
     camPos = jt::MathHelper::clamp(camPos, jt::Vector2f { 0.0f, 0.0f }, camPosMax);
-    // TODO max position
     getGame()->gfx().camera().setCamOffset(camPos);
 }
 

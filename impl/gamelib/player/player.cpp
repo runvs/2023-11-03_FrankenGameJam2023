@@ -54,6 +54,9 @@ void Player::doCreate()
     m_input = std::make_unique<InputComponentImpl>(getGame()->input().keyboard());
     m_sound = std::make_unique<SoundComponentImpl>(getGame()->audio(), getGame()->logger());
     m_graphics = std::make_unique<GraphicsComponentImpl>(getGame());
+
+    m_NitroBar = std::make_shared<jt::Bar>(4, 16, false, textureManager());
+    m_NitroBar->setMaxValue(1.0f);
 }
 
 void Player::doUpdate(float const elapsed)
@@ -62,9 +65,18 @@ void Player::doUpdate(float const elapsed)
     m_graphics->setPosition(m_b2Object->getPosition());
     m_graphics->setAnimationIfNotSet(selectWalkAnimation(m_input->getRotationAngle()));
     m_graphics->updateGraphics(elapsed);
+
+    m_NitroBar->setPosition(
+        m_graphics->getDrawable()->getPosition() + jt::Vector2f { 16.0f, 0.0f });
+    m_NitroBar->setCurrentValue(m_input->getBoostNitro());
+    m_NitroBar->update(elapsed);
 }
 
-void Player::doDraw() const { m_graphics->draw(renderTarget()); }
+void Player::doDraw() const
+{
+    m_graphics->draw(renderTarget());
+    m_NitroBar->draw(renderTarget());
+}
 
 GraphicsComponentInterface& Player::getGraphics() { return *m_graphics; }
 

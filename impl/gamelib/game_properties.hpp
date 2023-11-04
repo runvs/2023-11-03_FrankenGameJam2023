@@ -50,6 +50,7 @@ public:
     static inline constexpr float playerForwardStrength = 150.0f;
     static inline constexpr float playerRotationStrength = 100.0f;
     static inline constexpr float playerBreakMultiplier = 0.99f;
+    static inline constexpr float playerBoostFactor = 1.5f;
     static float ScreenSizeScrollBound();
 };
 
