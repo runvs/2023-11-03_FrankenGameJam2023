@@ -65,8 +65,8 @@ void StateGame::spawnMonkey()
 {
     if (m_monkeys == nullptr) {
         m_monkeys = std::make_shared<jt::ObjectGroup<Monkey>>();
+        add(m_monkeys);
     }
-    add(m_monkeys);
 
     jt::Vector2f position;
     do {
@@ -81,10 +81,10 @@ void StateGame::spawnMonkey()
 bool StateGame::isValidMonkeySpawnPosition(jt::Vector2f position) {
     const auto cameraOffset = getGame()->gfx().camera().getCamOffset();
     const auto screenRectWithExtraSpace = jt::Rectf {
-        cameraOffset.x - GP::GetScreenSize().x,
-        cameraOffset.y + GP::GetScreenSize().y,
-        cameraOffset.x + GP::GetScreenSize().x,
-        cameraOffset.y + GP::GetScreenSize().y
+        cameraOffset.x - GP::GetScreenSize().x * 0.5f,
+        cameraOffset.y - GP::GetScreenSize().y * 0.5f,
+        GP::GetScreenSize().x,
+        GP::GetScreenSize().y
     };
 
     if (jt::MathHelper::checkIsIn(screenRectWithExtraSpace, position)) {
@@ -156,6 +156,7 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                 if (harbor->canBeInteractedWith()) {
                     m_player->getCargo().addFruit(harbor->getFruitOffering());
                     harbor->pickUpFruit();
+                    spawnMonkey();
                     m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
                 }
             } else {
