@@ -9,6 +9,7 @@
 #include <screeneffects/vignette.hpp>
 #include <shape.hpp>
 #include <state_menu.hpp>
+#include "random/random.hpp"
 
 void StateGame::onCreate()
 {
@@ -76,14 +77,41 @@ void StateGame::spawnMonkey()
 {
     if (m_monkeys == nullptr) {
         m_monkeys = std::make_shared<jt::ObjectGroup<Monkey>>();
+        add(m_monkeys);
     }
-    add(m_monkeys);
 
-    // TODO spawn monkeys randomly over time
-    auto const monkey = std::make_shared<Monkey>(m_world, GP::GetScreenSize() * 0.75f);
+    jt::Vector2f position;
+    do {
+        position = jt::Random::getRandomPointIn(m_tilemap->getMapSizeInPixel());
+    } while (!isValidMonkeySpawnPosition(position));
+
+    auto const monkey = std::make_shared<Monkey>(m_world, position);
     add(monkey);
     m_monkeys->push_back(monkey);
 }
+
+bool StateGame::isValidMonkeySpawnPosition(jt::Vector2f position) {
+    const auto cameraOffset = getGame()->gfx().camera().getCamOffset();
+    const auto screenRectWithExtraSpace = jt::Rectf {
+        cameraOffset.x - GP::GetScreenSize().x * 0.5f,
+        cameraOffset.y - GP::GetScreenSize().y * 0.5f,
+        GP::GetScreenSize().x,
+        GP::GetScreenSize().y
+    };
+
+    if (jt::MathHelper::checkIsIn(screenRectWithExtraSpace, position)) {
+        return false;
+    }
+
+    for (auto & rect : m_tileCollisionRects) {
+        if (jt::MathHelper::checkIsIn(rect, position)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 
 void StateGame::onUpdate(float const elapsed)
 {
@@ -143,6 +171,7 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                 if (harbor->canBeInteractedWith()) {
                     m_player->getCargo().addFruit(harbor->getFruitOffering());
                     harbor->pickUpFruit();
+                    spawnMonkey();
                     m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
                     m_soundFruitPickup->play();
                 }
@@ -209,6 +238,7 @@ void StateGame::loadLevelCollisions(jt::tilemap::TilesonLoader& loader)
     auto tileCollisions = loader.loadCollisionsFromLayer("ground");
 
     tileCollisions.refineColliders(16);
+    m_tileCollisionRects = tileCollisions.getRects();
     for (auto const& r : tileCollisions.getRects()) {
         b2BodyDef bodyDef;
         bodyDef.fixedRotation = true;
