@@ -1,4 +1,5 @@
 ﻿#include "state_game.hpp"
+#include "tilemap/tileson_loader.hpp"
 #include <box2dwrapper/box2d_world_impl.hpp>
 #include <color/color.hpp>
 #include <game_interface.hpp>
@@ -23,6 +24,11 @@ void StateGame::onCreate()
     m_background->setColor(GP::PaletteBackground());
     m_background->setIgnoreCamMovement(true);
     m_background->update(0.0f);
+
+    jt::tilemap::TilesonLoader loader { getGame()->cache().getTilemapCache(),
+        "assets/test_map.json" };
+    m_tilemap = std::make_shared<jt::tilemap::TileLayer>(
+        loader.loadTilesFromLayer("ground", textureManager()));
 
     createPlayer();
 
@@ -71,16 +77,19 @@ void StateGame::onUpdate(float const elapsed)
             endGame();
         }
 
+        updateCamera(elapsed);
         updateHarbors(elapsed);
     }
 
     m_background->update(elapsed);
+    m_tilemap->update(elapsed);
     m_vignette->update(elapsed);
 }
 
 void StateGame::onDraw() const
 {
     m_background->draw(renderTarget());
+    m_tilemap->draw(renderTarget());
     drawObjects();
     m_vignette->draw();
     m_hud->draw();
@@ -128,4 +137,31 @@ void StateGame::updateHarbors(float const /*elapsed*/)
             }
         }
     }
+}
+
+void StateGame::updateCamera(float const elapsed)
+{
+    float const camMovementSpeed = 50;
+    auto playerPositionOnScreen = m_player->getGraphics().getDrawable()->getScreenPosition();
+    if (playerPositionOnScreen.x < GP::ScreenSizeScrollBound()) {
+        getGame()->gfx().camera().move(jt::Vector2f { -camMovementSpeed * elapsed, 0.0f });
+    } else if (playerPositionOnScreen.x + 8 > GP::GetScreenSize().x - GP::ScreenSizeScrollBound()) {
+        getGame()->gfx().camera().move(jt::Vector2f { camMovementSpeed * elapsed, 0.0f });
+    }
+
+    if (playerPositionOnScreen.y < GP::ScreenSizeScrollBound()) {
+        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, -camMovementSpeed * elapsed });
+    } else if (playerPositionOnScreen.y + 8 > GP::GetScreenSize().y - GP::ScreenSizeScrollBound()) {
+        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, camMovementSpeed * elapsed });
+    }
+
+    auto camPos = getGame()->gfx().camera().getCamOffset();
+    if (camPos.x < 0) {
+        camPos.x = 0;
+    }
+    if (camPos.y < 0) {
+        camPos.y = 0;
+    }
+    // TODO max position
+    getGame()->gfx().camera().setCamOffset(camPos);
 }

@@ -1,6 +1,7 @@
 ﻿#ifndef GAME_STATE_GAME_HPP
 #define GAME_STATE_GAME_HPP
 
+#include "tilemap/tile_layer.hpp"
 #include <box2dwrapper/box2d_world_interface.hpp>
 #include <game_state.hpp>
 #include <harbor/harbor.hpp>
@@ -29,6 +30,7 @@ private:
     std::shared_ptr<jt::Box2DWorldInterface> m_world { nullptr };
     std::shared_ptr<Player> m_player { nullptr };
     std::shared_ptr<jt::ObjectGroup<Harbor>> m_harbors;
+    std::shared_ptr<jt::tilemap::TileLayer> m_tilemap {};
 
     bool m_running { true };
     bool m_hasEnded { false };
@@ -45,6 +47,7 @@ private:
     void createPlayer();
     void createHarbors();
     void updateHarbors(float const elapsed);
+    void updateCamera(float const elapsed);
 };
 
 #endif
