@@ -46,6 +46,10 @@ public:
     static jt::Vector2f PlayerSize();
     static int TileSizeInPixel();
     static float HarborInteractionTimerMax();
+
+    static inline constexpr float playerForwardStrength = 150.0f;
+    static inline constexpr float playerRotationStrength = 100.0f;
+    static inline constexpr float playerBreakMultiplier = 0.99f;
 };
 
 #endif

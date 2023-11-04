@@ -43,6 +43,8 @@ public:
     /// \param v the velocity to be added
     void addVelocity(jt::Vector2f const& v);
 
+    void addForceToCenter(Vector2f const& f);
+
     /// Get the rotation in degree
     /// \return the rotation in degree
     float getRotation() const;

@@ -8,41 +8,26 @@
 #include <Box2D/Box2D.h>
 
 namespace {
-std::string selectWalkAnimation(jt::Vector2f const& velocity)
+std::string selectWalkAnimation(float const a)
 {
-    auto const l = jt::MathHelper::lengthSquared(velocity);
-    if (l < 20.0f) {
-        return "";
-    }
-
-    auto a = jt::MathHelper::angleOf(velocity);
-
-    if (a < 0) {
-        a += 360.0f;
-    }
-
-    //    std::cout << velocity.x << " " << velocity.y << " " << a << std::endl;
-
-    if (a >= 0 && a < 22.5) {
-        return "right";
+    if (a < 22.5) {
+        return "up";
     } else if (a < 22.5f + 45 * 1) {
         return "up-right";
     } else if (a < 22.5f + 45 * 2) {
-        return "up";
+        return "right";
     } else if (a < 22.5f + 45 * 3) {
-        return "up-left";
+        return "down-right";
     } else if (a < 22.5f + 45 * 4) {
-        return "left";
+        return "down";
     } else if (a < 22.5f + 45 * 5) {
         return "down-left";
     } else if (a < 22.5f + 45 * 6) {
-        return "down";
+        return "left";
     } else if (a < 22.5f + 45 * 7) {
-        return "down-right";
-    } else if (a <= 360) {
-        return "right";
+        return "up-left";
     }
-    return "";
+    return "up";
 }
 } // namespace
 
@@ -50,6 +35,8 @@ Player::Player(std::shared_ptr<jt::Box2DWorldInterface> world)
 {
     b2BodyDef def {};
     def.type = b2BodyType::b2_dynamicBody;
+    def.linearDamping = 1.0;
+    def.angularDamping = 1.0;
     m_b2Object = std::make_unique<jt::Box2DObject>(world, &def);
 }
 
@@ -64,9 +51,9 @@ void Player::doCreate()
 
 void Player::doUpdate(float const elapsed)
 {
-    m_input->updateMovement(*m_b2Object);
+    m_input->updateMovement(*m_b2Object, elapsed);
     m_graphics->setPosition(m_b2Object->getPosition());
-    m_graphics->setAnimationIfNotSet(selectWalkAnimation(m_b2Object->getVelocity()));
+    m_graphics->setAnimationIfNotSet(selectWalkAnimation(m_input->getRotationAngle()));
     m_graphics->updateGraphics(elapsed);
 }
 
