@@ -1,4 +1,5 @@
 ﻿#include "state_game.hpp"
+#include "tilemap/tileson_loader.hpp"
 #include <box2dwrapper/box2d_world_impl.hpp>
 #include <color/color.hpp>
 #include <game_interface.hpp>
@@ -13,20 +14,16 @@ void StateGame::onCreate()
 {
     m_world = std::make_shared<jt::Box2DWorldImpl>(jt::Vector2f { 0.0f, 0.0f });
 
-    float const w = static_cast<float>(GP::GetWindowSize().x);
-    float const h = static_cast<float>(GP::GetWindowSize().y);
-
     using jt::Shape;
 
-    m_background = std::make_shared<Shape>();
-    m_background->makeRect({ w, h }, textureManager());
-    m_background->setColor(GP::PaletteBackground());
-    m_background->setIgnoreCamMovement(true);
-    m_background->update(0.0f);
+    jt::tilemap::TilesonLoader loader { getGame()->cache().getTilemapCache(),
+        "assets/test_map.json" };
+    m_tilemap = std::make_shared<jt::tilemap::TileLayer>(
+        loader.loadTilesFromLayer("ground", textureManager()));
+    loadLevelCollisions(loader);
 
     createPlayer();
-
-    createHarbors();
+    createHarbors(loader);
 
     m_vignette = std::make_shared<jt::Vignette>(GP::GetScreenSize());
     add(m_vignette);
@@ -45,20 +42,20 @@ void StateGame::createPlayer()
     add(m_player);
 }
 
-void StateGame::createHarbors()
+void StateGame::createHarbors(jt::tilemap::TilesonLoader& loader)
 {
     m_harbors = std::make_shared<jt::ObjectGroup<Harbor>>();
     add(m_harbors);
 
-    // TODO create harbors based on map
-    auto const harbor = std::make_shared<Harbor>(GP::GetScreenSize() * 0.5f, true);
-    add(harbor);
-    m_harbors->push_back(harbor);
+    auto const harborObjects = loader.loadObjectsFromLayer("harbors");
 
-    auto const harbor2 = std::make_shared<Harbor>(
-        GP::GetScreenSize() * 0.5f + jt::Vector2f { GP::GetScreenSize().x * 0.25f, 0.0f }, false);
-    add(harbor2);
-    m_harbors->push_back(harbor2);
+    for (auto const& h : harborObjects) {
+        bool isOffering
+            = h.properties.bools.contains("isOffering") && h.properties.bools.at("isOffering");
+        auto const harbor = std::make_shared<Harbor>(h.position, isOffering);
+        add(harbor);
+        m_harbors->push_back(harbor);
+    }
 }
 
 void StateGame::onUpdate(float const elapsed)
@@ -71,16 +68,17 @@ void StateGame::onUpdate(float const elapsed)
             endGame();
         }
 
+        updateCamera(elapsed);
         updateHarbors(elapsed);
     }
 
-    m_background->update(elapsed);
+    m_tilemap->update(elapsed);
     m_vignette->update(elapsed);
 }
 
 void StateGame::onDraw() const
 {
-    m_background->draw(renderTarget());
+    m_tilemap->draw(renderTarget());
     drawObjects();
     m_vignette->draw();
     m_hud->draw();
@@ -127,5 +125,51 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                 }
             }
         }
+    }
+}
+
+void StateGame::updateCamera(float const elapsed)
+{
+    float const camMovementSpeed = 50;
+    auto playerPositionOnScreen = m_player->getGraphics().getDrawable()->getScreenPosition();
+    if (playerPositionOnScreen.x < GP::ScreenSizeScrollBound()) {
+        getGame()->gfx().camera().move(jt::Vector2f { -camMovementSpeed * elapsed, 0.0f });
+    } else if (playerPositionOnScreen.x + 8 > GP::GetScreenSize().x - GP::ScreenSizeScrollBound()) {
+        getGame()->gfx().camera().move(jt::Vector2f { camMovementSpeed * elapsed, 0.0f });
+    }
+
+    if (playerPositionOnScreen.y < GP::ScreenSizeScrollBound()) {
+        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, -camMovementSpeed * elapsed });
+    } else if (playerPositionOnScreen.y + 8 > GP::GetScreenSize().y - GP::ScreenSizeScrollBound()) {
+        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, camMovementSpeed * elapsed });
+    }
+
+    auto camPos = getGame()->gfx().camera().getCamOffset();
+    jt::Vector2f const camPosMax { m_tilemap->getMapSizeInPixel() - GP::GetScreenSize() };
+    camPos = jt::MathHelper::clamp(camPos, jt::Vector2f { 0.0f, 0.0f }, camPosMax);
+    // TODO max position
+    getGame()->gfx().camera().setCamOffset(camPos);
+}
+
+void StateGame::loadLevelCollisions(jt::tilemap::TilesonLoader& loader)
+{
+    auto tileCollisions = loader.loadCollisionsFromLayer("ground");
+
+    tileCollisions.refineColliders(16);
+    for (auto const& r : tileCollisions.getRects()) {
+        b2BodyDef bodyDef;
+        bodyDef.fixedRotation = true;
+        bodyDef.type = b2_staticBody;
+        bodyDef.position.Set(r.left + r.width / 2.0f, r.top + r.height / 2.0f);
+
+        b2FixtureDef fixtureDef;
+        b2PolygonShape boxCollider {};
+        boxCollider.SetAsBox(r.width / 2.0f, r.height / 2.0f);
+        fixtureDef.shape = &boxCollider;
+
+        auto collider = std::make_shared<jt::Box2DObject>(m_world, &bodyDef);
+        collider->getB2Body()->CreateFixture(&fixtureDef);
+
+        m_colliders.push_back(collider);
     }
 }

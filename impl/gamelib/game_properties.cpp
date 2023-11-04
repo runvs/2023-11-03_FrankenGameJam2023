@@ -40,3 +40,5 @@ jt::Vector2f GP::PlayerSize() { return jt::Vector2f { 16.0f, 16.0f }; }
 int GP::TileSizeInPixel() { return 16; }
 
 float GP::HarborInteractionTimerMax() { return 3.0f; }
+
+float GP::ScreenSizeScrollBound() { return 64.0f; }

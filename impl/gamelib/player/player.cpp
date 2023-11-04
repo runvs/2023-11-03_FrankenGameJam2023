@@ -37,6 +37,7 @@ Player::Player(std::shared_ptr<jt::Box2DWorldInterface> world)
     def.type = b2BodyType::b2_dynamicBody;
     def.linearDamping = 1.0;
     def.angularDamping = 1.0;
+
     m_b2Object = std::make_unique<jt::Box2DObject>(world, &def);
 }
 
@@ -44,6 +45,12 @@ jt::Vector2f Player::getPosition() const { return m_b2Object->getPosition(); }
 
 void Player::doCreate()
 {
+    b2FixtureDef fixtureDef;
+    b2CircleShape circleCollider {};
+    circleCollider.m_radius = 8.0f;
+    fixtureDef.shape = &circleCollider;
+    m_b2Object->getB2Body()->CreateFixture(&fixtureDef);
+
     m_input = std::make_unique<InputComponentImpl>(getGame()->input().keyboard());
     m_sound = std::make_unique<SoundComponentImpl>(getGame()->audio(), getGame()->logger());
     m_graphics = std::make_unique<GraphicsComponentImpl>(getGame());
