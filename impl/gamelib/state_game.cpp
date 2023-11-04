@@ -1,4 +1,5 @@
 ﻿#include "state_game.hpp"
+#include "random/random.hpp"
 #include "tilemap/tileson_loader.hpp"
 #include <box2dwrapper/box2d_world_impl.hpp>
 #include <color/color.hpp>
@@ -9,7 +10,6 @@
 #include <screeneffects/vignette.hpp>
 #include <shape.hpp>
 #include <state_menu.hpp>
-#include "random/random.hpp"
 
 void StateGame::onCreate()
 {
@@ -22,7 +22,14 @@ void StateGame::onCreate()
     m_tilemap = std::make_shared<jt::tilemap::TileLayer>(
         loader.loadTilesFromLayer("ground", textureManager()));
     loadLevelCollisions(loader);
+    m_overlay = std::make_shared<jt::tilemap::TileLayer>(
+        loader.loadTilesFromLayer("overlay", textureManager()));
 
+    m_waves = std::make_shared<jt::Waves>("assets/waves.aseprite",
+        jt::Rectf {
+            0.0f, 0.0f, m_tilemap->getMapSizeInPixel().x, m_tilemap->getMapSizeInPixel().y },
+        m_tileCollisionRects, 100);
+    add(m_waves);
     createPlayer();
 
     createHarbors(loader);
@@ -35,6 +42,11 @@ void StateGame::onCreate()
 
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
+
+    m_soundFruitPickup = getGame()->audio().addTemporarySound("assets/sfx/fruit-pickup.ogg");
+    m_soundFruitDeliver = getGame()->audio().addTemporarySound("assets/sfx/reward.ogg");
+    m_soundMonkeyHitsEnemy
+        = getGame()->audio().addTemporarySound("assets/sfx/monkey-hits-boat.ogg");
 }
 
 void StateGame::onEnter() { }
@@ -78,20 +90,18 @@ void StateGame::spawnMonkey()
     m_monkeys->push_back(monkey);
 }
 
-bool StateGame::isValidMonkeySpawnPosition(jt::Vector2f position) {
-    const auto cameraOffset = getGame()->gfx().camera().getCamOffset();
-    const auto screenRectWithExtraSpace = jt::Rectf {
-        cameraOffset.x - GP::GetScreenSize().x * 0.5f,
-        cameraOffset.y - GP::GetScreenSize().y * 0.5f,
-        GP::GetScreenSize().x,
-        GP::GetScreenSize().y
-    };
+bool StateGame::isValidMonkeySpawnPosition(jt::Vector2f position)
+{
+    auto const cameraOffset = getGame()->gfx().camera().getCamOffset();
+    auto const screenRectWithExtraSpace = jt::Rectf { cameraOffset.x - GP::GetScreenSize().x * 0.5f,
+        cameraOffset.y - GP::GetScreenSize().y * 0.5f, GP::GetScreenSize().x,
+        GP::GetScreenSize().y };
 
     if (jt::MathHelper::checkIsIn(screenRectWithExtraSpace, position)) {
         return false;
     }
 
-    for (auto & rect : m_tileCollisionRects) {
+    for (auto& rect : m_tileCollisionRects) {
         if (jt::MathHelper::checkIsIn(rect, position)) {
             return false;
         }
@@ -99,7 +109,6 @@ bool StateGame::isValidMonkeySpawnPosition(jt::Vector2f position) {
 
     return true;
 }
-
 
 void StateGame::onUpdate(float const elapsed)
 {
@@ -118,13 +127,16 @@ void StateGame::onUpdate(float const elapsed)
     }
 
     m_tilemap->update(elapsed);
+    m_overlay->update(elapsed);
     m_vignette->update(elapsed);
 }
 
 void StateGame::onDraw() const
 {
     m_tilemap->draw(renderTarget());
+    m_overlay->draw(renderTarget());
     drawObjects();
+
     m_vignette->draw();
     m_hud->draw();
 }
@@ -138,7 +150,7 @@ void StateGame::endGame()
     m_hasEnded = true;
     m_running = false;
 
-    getGame()->stateManager().switchToStoredState("menu");
+    getGame()->stateManager().switchState(std::make_shared<StateMenu>());
 }
 
 std::string StateGame::getName() const { return "State Game"; }
@@ -158,6 +170,7 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                     harbor->pickUpFruit();
                     spawnMonkey();
                     m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
+                    m_soundFruitPickup->play();
                 }
             } else {
                 if (m_player->getCargo().getNumberOfFruits() > 0) {
@@ -167,6 +180,7 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                         m_hud->getObserverScoreP1()->notify(
                             m_player->getCargo().getNumberOfFruits());
                         harbor->deliverFruit();
+                        m_soundFruitDeliver->play();
                     }
                 }
             }
@@ -180,6 +194,16 @@ void StateGame::updateMonkeys()
     for (auto const& m : *m_monkeys) {
         auto monkey = m.lock();
         monkey->updatePlayerPosition(playerPos);
+
+        if (monkey->canAttack()) {
+            auto const monkeyPos = monkey->getPosition();
+            auto const l = jt::MathHelper::lengthSquared(playerPos - monkeyPos);
+            if (l <= GP::TileSizeInPixel() * GP::TileSizeInPixel()) {
+                m_soundMonkeyHitsEnemy->play();
+                m_player->getDamage();
+                monkey->attack();
+            }
+        }
     }
 }
 
@@ -195,7 +219,8 @@ void StateGame::updateCamera(float const elapsed)
 
     jt::MathHelper::normalizeMe(velocity);
     velocity = velocity * speedFactor * GP::cameraDragDistance;
-    velocity = velocity * GP::cameraSmoothFactor + m_lastFrameCameraOffset * (1 - GP::cameraSmoothFactor);
+    velocity = velocity * GP::cameraSmoothFactor
+        + m_lastFrameCameraOffset * (1 - GP::cameraSmoothFactor);
     m_lastFrameCameraOffset = velocity;
 
     auto center = m_player->getPosition() - GP::GetScreenSize() * 0.5f;
@@ -223,7 +248,7 @@ void StateGame::loadLevelCollisions(jt::tilemap::TilesonLoader& loader)
         fixtureDef.shape = &boxCollider;
 
         auto collider = std::make_shared<jt::Box2DObject>(m_world, &bodyDef);
-        
+
         collider->getB2Body()->CreateFixture(&fixtureDef);
 
         m_colliders.push_back(collider);

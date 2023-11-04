@@ -5,7 +5,6 @@
 #include "box2dwrapper/box2d_world_interface.hpp"
 #include "game_object.hpp"
 #include "player/graphics/graphics_component_interface.hpp"
-#include "player/sound/sound_component_interface.hpp"
 #include "monkey/ai/ai_component_interface.h"
 
 class Monkey : public jt::GameObject {
@@ -18,12 +17,16 @@ public:
 
     virtual void updatePlayerPosition(jt::Vector2f const playerPos);
 
+    bool canAttack() const;
+    void attack();
+
 private:
     std::unique_ptr<GraphicsComponentInterface> m_graphics { nullptr };
-    std::unique_ptr<SoundComponentInterface> m_sound { nullptr };
     std::unique_ptr<AiComponentInterface> m_ai { nullptr };
 
     std::unique_ptr<jt::Box2DObject> m_b2Object { nullptr };
+
+    float m_attackTimer { 0.0f };
 
     virtual void doCreate();
     virtual void doUpdate(float const elapsed);

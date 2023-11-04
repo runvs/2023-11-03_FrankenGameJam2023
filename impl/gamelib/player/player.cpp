@@ -3,8 +3,6 @@
 #include <math_helper.hpp>
 #include <player/graphics/graphics_component_impl.hpp>
 #include <player/input/input_component_impl.hpp>
-#include <player/sound/sound_component_impl.hpp>
-#include <state_game.hpp>
 #include <Box2D/Box2D.h>
 
 namespace {
@@ -52,7 +50,6 @@ void Player::doCreate()
     m_b2Object->getB2Body()->CreateFixture(&fixtureDef);
 
     m_input = std::make_unique<InputComponentImpl>(getGame()->input().keyboard());
-    m_sound = std::make_unique<SoundComponentImpl>(getGame()->audio(), getGame()->logger());
     m_graphics = std::make_unique<GraphicsComponentImpl>(getGame(), "assets/ship.aseprite");
 
     m_NitroBar = std::make_shared<jt::Bar>(4, 16, false, textureManager());
@@ -90,3 +87,5 @@ void Player::clampPositionOnMap(jt::Vector2f const& mapSize)
     pos = jt::MathHelper::clamp(pos, { 0.0f, 0.0f }, mapSize);
     m_b2Object->setPosition(pos);
 }
+
+void Player::getDamage() { m_graphics->flash(0.5f, jt::colors::Red); }

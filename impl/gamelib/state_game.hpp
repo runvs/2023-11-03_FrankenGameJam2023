@@ -1,12 +1,14 @@
 ﻿#ifndef GAME_STATE_GAME_HPP
 #define GAME_STATE_GAME_HPP
 
-#include "tilemap/tile_layer.hpp"
+#include <audio/sound/sound_interface.hpp>
 #include <box2dwrapper/box2d_world_interface.hpp>
 #include <game_state.hpp>
 #include <harbor/harbor.hpp>
 #include <object_group.hpp>
 #include <player/player.hpp>
+#include <screeneffects/waves.hpp>
+#include <tilemap/tile_layer.hpp>
 #include "monkey/monkey.h"
 #include <memory>
 #include <vector>
@@ -37,16 +39,20 @@ private:
     std::shared_ptr<jt::ObjectGroup<Harbor>> m_harbors;
     std::shared_ptr<jt::ObjectGroup<Monkey>> m_monkeys;
     std::shared_ptr<jt::tilemap::TileLayer> m_tilemap {};
+    std::shared_ptr<jt::tilemap::TileLayer> m_overlay {};
     std::vector<std::shared_ptr<jt::Box2DObject>> m_colliders {};
     std::vector<jt::Rectf> m_tileCollisionRects {};
+
+    std::shared_ptr<jt::Waves> m_waves {};
+
+    std::shared_ptr<jt::SoundInterface> m_soundFruitPickup;
+    std::shared_ptr<jt::SoundInterface> m_soundFruitDeliver;
+    std::shared_ptr<jt::SoundInterface> m_soundMonkeyHitsEnemy;
 
     bool m_running { true };
     bool m_hasEnded { false };
 
-    int m_scoreP1 { 0 };
-    int m_scoreP2 { 0 };
-
-    jt::Vector2f m_lastFrameCameraOffset = jt::Vector2f {0.0f, 0.0f};
+    jt::Vector2f m_lastFrameCameraOffset = jt::Vector2f { 0.0f, 0.0f };
 
     void onCreate() override;
     void onEnter() override;
