@@ -62,8 +62,7 @@ void StateGame::createHarbors(jt::tilemap::TilesonLoader& loader)
 
 void StateGame::spawnMonkey()
 {
-    if (m_monkeys == nullptr)
-    {
+    if (m_monkeys == nullptr) {
         m_monkeys = std::make_shared<jt::ObjectGroup<Monkey>>();
     }
     add(m_monkeys);
@@ -87,6 +86,7 @@ void StateGame::onUpdate(float const elapsed)
         updateCamera(elapsed);
         updateHarbors(elapsed);
         updateMonkeys();
+        updatePlayer();
     }
 
     m_tilemap->update(elapsed);
@@ -207,8 +207,14 @@ void StateGame::loadLevelCollisions(jt::tilemap::TilesonLoader& loader)
         fixtureDef.shape = &boxCollider;
 
         auto collider = std::make_shared<jt::Box2DObject>(m_world, &bodyDef);
+        
         collider->getB2Body()->CreateFixture(&fixtureDef);
 
         m_colliders.push_back(collider);
     }
+}
+
+void StateGame::updatePlayer()
+{
+    m_player->clampPositionOnMap(m_tilemap->getMapSizeInPixel() - jt::Vector2f { 16.0f, 16.0f });
 }

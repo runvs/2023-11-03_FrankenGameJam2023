@@ -81,3 +81,10 @@ void Player::doDraw() const
 GraphicsComponentInterface& Player::getGraphics() { return *m_graphics; }
 
 CargoComponent& Player::getCargo() { return m_cargo; }
+
+void Player::clampPositionOnMap(jt::Vector2f const& mapSize)
+{
+    auto pos = m_b2Object->getPosition();
+    pos = jt::MathHelper::clamp(pos, { 0.0f, 0.0f }, mapSize);
+    m_b2Object->setPosition(pos);
+}

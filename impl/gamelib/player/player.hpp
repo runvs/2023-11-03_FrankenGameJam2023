@@ -20,6 +20,8 @@ public:
     GraphicsComponentInterface& getGraphics();
     CargoComponent& getCargo();
 
+    void clampPositionOnMap(jt::Vector2f const& mapSize);
+
 private:
     std::unique_ptr<InputComponentInterface> m_input { nullptr };
     std::unique_ptr<GraphicsComponentInterface> m_graphics { nullptr };

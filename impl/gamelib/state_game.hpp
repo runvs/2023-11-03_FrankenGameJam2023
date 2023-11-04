@@ -58,6 +58,7 @@ private:
     void updateMonkeys();
     void updateCamera(float const elapsed);
     void loadLevelCollisions(jt::tilemap::TilesonLoader& loader);
+    void updatePlayer();
 };
 
 #endif
