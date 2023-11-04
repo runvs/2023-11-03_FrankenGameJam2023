@@ -1,4 +1,5 @@
 ﻿#include "state_game.hpp"
+#include "random/random.hpp"
 #include "tilemap/tileson_loader.hpp"
 #include <box2dwrapper/box2d_world_impl.hpp>
 #include <color/color.hpp>
@@ -9,7 +10,6 @@
 #include <screeneffects/vignette.hpp>
 #include <shape.hpp>
 #include <state_menu.hpp>
-#include "random/random.hpp"
 
 void StateGame::onCreate()
 {
@@ -28,7 +28,7 @@ void StateGame::onCreate()
     m_waves = std::make_shared<jt::Waves>("assets/waves.aseprite",
         jt::Rectf {
             0.0f, 0.0f, m_tilemap->getMapSizeInPixel().x, m_tilemap->getMapSizeInPixel().y },
-        std::vector<jt::Rectf> {}, 100);
+        m_tileCollisionRects, 100);
     add(m_waves);
     createPlayer();
 
@@ -90,20 +90,18 @@ void StateGame::spawnMonkey()
     m_monkeys->push_back(monkey);
 }
 
-bool StateGame::isValidMonkeySpawnPosition(jt::Vector2f position) {
-    const auto cameraOffset = getGame()->gfx().camera().getCamOffset();
-    const auto screenRectWithExtraSpace = jt::Rectf {
-        cameraOffset.x - GP::GetScreenSize().x * 0.5f,
-        cameraOffset.y - GP::GetScreenSize().y * 0.5f,
-        GP::GetScreenSize().x,
-        GP::GetScreenSize().y
-    };
+bool StateGame::isValidMonkeySpawnPosition(jt::Vector2f position)
+{
+    auto const cameraOffset = getGame()->gfx().camera().getCamOffset();
+    auto const screenRectWithExtraSpace = jt::Rectf { cameraOffset.x - GP::GetScreenSize().x * 0.5f,
+        cameraOffset.y - GP::GetScreenSize().y * 0.5f, GP::GetScreenSize().x,
+        GP::GetScreenSize().y };
 
     if (jt::MathHelper::checkIsIn(screenRectWithExtraSpace, position)) {
         return false;
     }
 
-    for (auto & rect : m_tileCollisionRects) {
+    for (auto& rect : m_tileCollisionRects) {
         if (jt::MathHelper::checkIsIn(rect, position)) {
             return false;
         }
@@ -111,7 +109,6 @@ bool StateGame::isValidMonkeySpawnPosition(jt::Vector2f position) {
 
     return true;
 }
-
 
 void StateGame::onUpdate(float const elapsed)
 {
