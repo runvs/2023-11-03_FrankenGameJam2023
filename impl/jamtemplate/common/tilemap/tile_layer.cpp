@@ -9,6 +9,25 @@ jt::tilemap::TileLayer::TileLayer(std::vector<jt::tilemap::TileInfo> const& tile
     : m_tileSetSprites { tileSetSprites }
     , m_tiles { tileInfo }
 {
+    calculateMapSize();
+}
+
+void jt::tilemap::TileLayer::calculateMapSize()
+{
+    m_mapSizeInPixel = { 0.0f, 0.0f };
+    if (m_tiles.empty()) {
+        return;
+    }
+
+    for (auto const& t : m_tiles) {
+        if (t.position.x > m_mapSizeInPixel.x) {
+            m_mapSizeInPixel.x = t.position.x;
+        }
+        if (t.position.y > m_mapSizeInPixel.y) {
+            m_mapSizeInPixel.y = t.position.y;
+        }
+    }
+    m_mapSizeInPixel += m_tiles.at(0).size;
 }
 
 jt::tilemap::TileLayer::TileLayer(std::tuple<std::vector<jt::tilemap::TileInfo> const&,
@@ -30,10 +49,10 @@ bool jt::tilemap::TileLayer::isTileVisible(jt::tilemap::TileInfo const& tile) co
     if (tile.position.y + camOffset.y + tile.size.y < 0) {
         return false;
     }
-    if (tile.position.x + camOffset.x >= this->m_screenSizeHint.x + tile.size.x) {
+    if (tile.position.x + camOffset.x >= m_screenSizeHint.x + tile.size.x) {
         return false;
     }
-    if (tile.position.y + camOffset.y >= this->m_screenSizeHint.y + tile.size.y) {
+    if (tile.position.y + camOffset.y >= m_screenSizeHint.y + tile.size.y) {
         return false;
     }
     return true;
@@ -50,17 +69,16 @@ void jt::tilemap::TileLayer::doDraw(std::shared_ptr<jt::RenderTargetLayer> const
 
         auto const pixelPosForTile = tile.position + posOffset;
         auto const id = tile.id;
-        this->m_tileSetSprites.at(id)->setPosition(
-            jt::Vector2f { pixelPosForTile.x, pixelPosForTile.y });
+        m_tileSetSprites.at(id)->setPosition(jt::Vector2f { pixelPosForTile.x, pixelPosForTile.y });
         auto color = jt::colors::White;
         if (m_colorFunction != nullptr) {
             color = m_colorFunction(tile.position);
         }
-        this->m_tileSetSprites.at(id)->setColor(color);
-        this->m_tileSetSprites.at(id)->setScale(this->m_scale);
-        this->m_tileSetSprites.at(id)->update(0.0f);
-        this->m_tileSetSprites.at(id)->setBlendMode(getBlendMode());
-        this->m_tileSetSprites.at(id)->draw(sptr);
+        m_tileSetSprites.at(id)->setColor(color);
+        m_tileSetSprites.at(id)->setScale(m_scale);
+        m_tileSetSprites.at(id)->update(0.0f);
+        m_tileSetSprites.at(id)->setBlendMode(getBlendMode());
+        m_tileSetSprites.at(id)->draw(sptr);
     }
 }
 
@@ -132,3 +150,5 @@ void jt::tilemap::TileLayer::setColorFunction(
 {
     m_colorFunction = colorFunc;
 }
+
+jt::Vector2f jt::tilemap::TileLayer::getMapSizeInPixel() const { return m_mapSizeInPixel; }

@@ -37,6 +37,8 @@ public:
     void doDrawFlash(std::shared_ptr<jt::RenderTargetLayer> sptr) const override;
     void doDrawShadow(std::shared_ptr<jt::RenderTargetLayer> sptr) const override;
 
+    jt::Vector2f getMapSizeInPixel() const;
+
 private:
     void doDrawOutline(std::shared_ptr<jt::RenderTargetLayer> const sptr) const override;
 
@@ -71,7 +73,10 @@ private:
     jt::Vector2f m_scale { 1.0f, 1.0f };
     Color m_color { jt::colors::White };
 
+    jt::Vector2f m_mapSizeInPixel { 0.0f, 0.0f };
+
     bool isTileVisible(TileInfo const& tile) const;
+    void calculateMapSize();
 };
 
 } // namespace tilemap

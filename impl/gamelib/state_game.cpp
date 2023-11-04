@@ -145,12 +145,8 @@ void StateGame::updateCamera(float const elapsed)
     }
 
     auto camPos = getGame()->gfx().camera().getCamOffset();
-    if (camPos.x < 0) {
-        camPos.x = 0;
-    }
-    if (camPos.y < 0) {
-        camPos.y = 0;
-    }
+    jt::Vector2f const camPosMax { m_tilemap->getMapSizeInPixel() - GP::GetScreenSize() };
+    camPos = jt::MathHelper::clamp(camPos, jt::Vector2f { 0.0f, 0.0f }, camPosMax);
     // TODO max position
     getGame()->gfx().camera().setCamOffset(camPos);
 }

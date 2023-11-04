@@ -49,7 +49,7 @@ void Player::doCreate()
     b2CircleShape circleCollider {};
     circleCollider.m_radius = 8.0f;
     fixtureDef.shape = &circleCollider;
-    auto playerCollider = m_b2Object->getB2Body()->CreateFixture(&fixtureDef);
+    m_b2Object->getB2Body()->CreateFixture(&fixtureDef);
 
     m_input = std::make_unique<InputComponentImpl>(getGame()->input().keyboard());
     m_sound = std::make_unique<SoundComponentImpl>(getGame()->audio(), getGame()->logger());
