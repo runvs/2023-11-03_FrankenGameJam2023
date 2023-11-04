@@ -16,6 +16,8 @@ public:
 
     GraphicsComponentInterface& getGraphics();
 
+    virtual void updatePlayerPosition(jt::Vector2f const playerPos);
+
 private:
     std::unique_ptr<GraphicsComponentInterface> m_graphics { nullptr };
     std::unique_ptr<SoundComponentInterface> m_sound { nullptr };

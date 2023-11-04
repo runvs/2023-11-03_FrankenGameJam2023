@@ -86,6 +86,7 @@ void StateGame::onUpdate(float const elapsed)
 
         updateCamera(elapsed);
         updateHarbors(elapsed);
+        updateMonkeys();
     }
 
     m_tilemap->update(elapsed);
@@ -141,6 +142,15 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                 }
             }
         }
+    }
+}
+
+void StateGame::updateMonkeys()
+{
+    auto const playerPos = m_player->getPosition();
+    for (auto const& m : *m_monkeys) {
+        auto monkey = m.lock();
+        monkey->updatePlayerPosition(playerPos);
     }
 }
 

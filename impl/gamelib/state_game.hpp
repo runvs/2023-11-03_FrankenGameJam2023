@@ -55,6 +55,7 @@ private:
     void createHarbors(jt::tilemap::TilesonLoader& loader);
     void spawnMonkey();
     void updateHarbors(float const elapsed);
+    void updateMonkeys();
     void updateCamera(float const elapsed);
     void loadLevelCollisions(jt::tilemap::TilesonLoader& loader);
 };
