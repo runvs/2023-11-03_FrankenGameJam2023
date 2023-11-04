@@ -8,7 +8,8 @@
 
 class GraphicsComponentImpl : public GraphicsComponentInterface {
 public:
-    explicit GraphicsComponentImpl(std::shared_ptr<jt::GameInterface> gameInterface);
+    explicit GraphicsComponentImpl(
+        std::shared_ptr<jt::GameInterface> gameInterface, std::string asepriteFileName);
 
     void updateGraphics(float elapsed) override;
     void setPosition(jt::Vector2f const& playerPosition) override;
@@ -21,7 +22,7 @@ public:
     std::shared_ptr<jt::DrawableInterface> getDrawable() override;
 
 private:
-    void createAnimation(jt::TextureManagerInterface& textureManager);
+    void createAnimation(jt::TextureManagerInterface& textureManager, std::string asepriteFileName);
     std::shared_ptr<jt::Animation> m_animation;
 };
 

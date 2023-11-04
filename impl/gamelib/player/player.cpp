@@ -53,7 +53,7 @@ void Player::doCreate()
 
     m_input = std::make_unique<InputComponentImpl>(getGame()->input().keyboard());
     m_sound = std::make_unique<SoundComponentImpl>(getGame()->audio(), getGame()->logger());
-    m_graphics = std::make_unique<GraphicsComponentImpl>(getGame());
+    m_graphics = std::make_unique<GraphicsComponentImpl>(getGame(), "assets/ship.aseprite");
 
     m_NitroBar = std::make_shared<jt::Bar>(4, 16, false, textureManager());
     m_NitroBar->setMaxValue(1.0f);

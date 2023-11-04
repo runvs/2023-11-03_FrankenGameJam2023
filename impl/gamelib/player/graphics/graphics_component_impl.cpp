@@ -2,15 +2,17 @@
 #include <game_properties.hpp>
 #include <math_helper.hpp>
 
-GraphicsComponentImpl::GraphicsComponentImpl(std::shared_ptr<jt::GameInterface> gameInterface)
+GraphicsComponentImpl::GraphicsComponentImpl(
+    std::shared_ptr<jt::GameInterface> gameInterface, std::string asepriteFileName)
 {
-    createAnimation(gameInterface->gfx().textureManager());
+    createAnimation(gameInterface->gfx().textureManager(), asepriteFileName);
 }
 
-void GraphicsComponentImpl::createAnimation(jt::TextureManagerInterface& textureManager)
+void GraphicsComponentImpl::createAnimation(
+    jt::TextureManagerInterface& textureManager, std::string asepriteFileName)
 {
     m_animation = std::make_shared<jt::Animation>();
-    m_animation->loadFromAseprite("assets/ship.aseprite", textureManager);
+    m_animation->loadFromAseprite(asepriteFileName, textureManager);
     m_animation->play("right");
 }
 
