@@ -54,6 +54,8 @@ public:
     static inline constexpr float monkeyForwardStrength = 100.0f;
     static inline constexpr float monkeyChaseDistance = 125.0f;
     static inline constexpr float monkeyRotationSpeed = 100.0f;
+    static inline constexpr float cameraDragDistance = 64.0f;
+    static inline constexpr float cameraSmoothFactor = 0.025f;
     static float ScreenSizeScrollBound();
 };
 

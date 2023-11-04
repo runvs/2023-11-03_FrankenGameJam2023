@@ -158,15 +158,15 @@ void StateGame::updateCamera(float const elapsed)
 {
     auto velocity = m_player->getVelocity();
     float speedFactor;
-    if (jt::MathHelper::length(velocity) > 64) {
+    if (jt::MathHelper::length(velocity) > GP::cameraDragDistance) {
         speedFactor = 1;
     } else {
-        speedFactor = jt::MathHelper::length(velocity) / 64;
+        speedFactor = jt::MathHelper::length(velocity) / GP::cameraDragDistance;
     }
 
     jt::MathHelper::normalizeMe(velocity);
-    velocity = velocity * speedFactor * 64.0f;
-    velocity = velocity * 0.025f + m_lastFrameCameraOffset * 0.975f;
+    velocity = velocity * speedFactor * GP::cameraDragDistance;
+    velocity = velocity * GP::cameraSmoothFactor + m_lastFrameCameraOffset * (1 - GP::cameraSmoothFactor);
     m_lastFrameCameraOffset = velocity;
 
     auto center = m_player->getPosition() - GP::GetScreenSize() * 0.5f;
