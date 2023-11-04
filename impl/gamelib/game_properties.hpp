@@ -45,7 +45,7 @@ public:
     static int PhysicPositionIterations();
     static jt::Vector2f PlayerSize();
     static int TileSizeInPixel();
-    static float OfferTimerMaxValue();
+    static float HarborInteractionTimerMax();
 };
 
 #endif

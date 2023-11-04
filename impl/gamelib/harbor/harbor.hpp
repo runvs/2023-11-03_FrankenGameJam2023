@@ -15,7 +15,7 @@ public:
 
     bool isOffering() const;
     std::string getFruitOffering() const;
-    bool hasFruitToOffer() const;
+    bool canBeInteractedWith() const;
 
 private:
     void doCreate() override;
@@ -26,8 +26,8 @@ private:
 
     bool m_isOffering { false };
     std::string m_fruitOffer { "" };
-    float m_offerTimer { 0.0f };
-    std::shared_ptr<jt::Bar> m_offerTimerBar { nullptr };
+    float m_interactionTimer { 0.0f };
+    std::shared_ptr<jt::Bar> m_interactionTimerBar { nullptr };
 };
 
 #endif // JAMTEMPLATE_HARBOR_HPP

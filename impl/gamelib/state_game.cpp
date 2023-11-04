@@ -106,11 +106,11 @@ void StateGame::updateHarbors(float const /*elapsed*/)
     for (auto const& h : *m_harbors) {
         auto harbor = h.lock();
         auto const harborPos = harbor->getPosition();
-        auto const l = jt::MathHelper::distanceBetween(harborPos, playerPos);
-        if (l < GP::TileSizeInPixel()) {
+        auto const l = jt::MathHelper::distanceBetweenSquared(harborPos, playerPos);
+        if (l < GP::TileSizeInPixel() * GP::TileSizeInPixel()) {
             m_player->getGraphics().getDrawable()->flash(0.1f, jt::colors::Yellow);
             if (harbor->isOffering()) {
-                if (harbor->hasFruitToOffer()) {
+                if (harbor->canBeInteractedWith()) {
                     m_player->getCargo().addFruit(harbor->getFruitOffering());
                     harbor->pickUpFruit();
                     m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
@@ -118,9 +118,11 @@ void StateGame::updateHarbors(float const /*elapsed*/)
 
             } else {
                 // TODO check if special fruit requested
-                m_player->getCargo().removeFruit("");
-                m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
-                harbor->deliverFruit();
+                if (harbor->canBeInteractedWith()) {
+                    m_player->getCargo().removeFruit("");
+                    m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
+                    harbor->deliverFruit();
+                }
             }
         }
     }
