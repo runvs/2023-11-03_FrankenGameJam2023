@@ -8,21 +8,19 @@ InputComponentImpl::InputComponentImpl(std::shared_ptr<jt::KeyboardInterface> ke
 
 void InputComponentImpl::updateMovement(InputTargetInterface& target)
 {
-    target.setVelocity(jt::Vector2f { 0.0f, 0.0f });
-
-    auto const speed = 100.0f;
+    auto const force = 150.0f;
 
     if (m_keyboard->pressed(jt::KeyCode::D) || m_keyboard->pressed(jt::KeyCode::Right)) {
-        target.addVelocity(jt::Vector2f { speed, 0.0f });
+        target.addForceToCenter(jt::Vector2f { force, 0.0f });
     }
     if (m_keyboard->pressed(jt::KeyCode::A) || m_keyboard->pressed(jt::KeyCode::Left)) {
-        target.addVelocity(jt::Vector2f { -speed, 0.0f });
+        target.addForceToCenter(jt::Vector2f { -force, 0.0f });
     }
 
     if (m_keyboard->pressed(jt::KeyCode::W) || m_keyboard->pressed(jt::KeyCode::Up)) {
-        target.addVelocity(jt::Vector2f { 0.0f, -speed });
+        target.addForceToCenter(jt::Vector2f { 0.0f, -force });
     }
     if (m_keyboard->pressed(jt::KeyCode::S) || m_keyboard->pressed(jt::KeyCode::Down)) {
-        target.addVelocity(jt::Vector2f { 0.0f, speed });
+        target.addForceToCenter(jt::Vector2f { 0.0f, force });
     }
 }
