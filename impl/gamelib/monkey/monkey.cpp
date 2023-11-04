@@ -5,24 +5,33 @@
 namespace {
 std::string selectWalkAnimation(float const a)
 {
-    if (a < 22.5) {
-        return "up";
-    } else if (a < 22.5f + 45 * 1) {
-        return "up-right";
-    } else if (a < 22.5f + 45 * 2) {
-        return "right";
-    } else if (a < 22.5f + 45 * 3) {
-        return "down-right";
-    } else if (a < 22.5f + 45 * 4) {
-        return "down";
-    } else if (a < 22.5f + 45 * 5) {
-        return "down-left";
-    } else if (a < 22.5f + 45 * 6) {
-        return "left";
-    } else if (a < 22.5f + 45 * 7) {
-        return "up-left";
+    float clampedValue = a;
+
+    while (clampedValue < 360) {
+        clampedValue += 360;
     }
-    return "up";
+    while (clampedValue > 360) {
+        clampedValue -= 360;
+    }
+
+    if (clampedValue < 22.5) {
+        return "right";
+    } else if (clampedValue < 22.5f + 45 * 1) {
+        return "up-right";
+    } else if (clampedValue < 22.5f + 45 * 2) {
+        return "up";
+    } else if (clampedValue < 22.5f + 45 * 3) {
+        return "up-left";
+    } else if (clampedValue < 22.5f + 45 * 4) {
+        return "left";
+    } else if (clampedValue < 22.5f + 45 * 5) {
+        return "down-left";
+    } else if (clampedValue < 22.5f + 45 * 6) {
+        return "down";
+    } else if (clampedValue < 22.5f + 45 * 7) {
+        return "down-right";
+    }
+    return "right";
 }
 } // namespace
 

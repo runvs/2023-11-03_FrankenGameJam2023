@@ -33,11 +33,6 @@ void AiComponentImpl::update(AiTargetInterface& target, float const elapsed)
     auto const force
         = jt::MathHelper::rotateBy(jt::Vector2f { movementSpeed, 0.0f }, -rotationAngle);
     target.addForceToCenter(force);
-
-    //    std::cout << "monke pos: " << target.getPosition() << " player pos: " << playerPos
-    //              << " diff: " << diff << " current: " << rotationAngle << " target: " <<
-    //              targetRotation
-    //              << std::endl;
 }
 
 void AiComponentImpl::updatePlayerPosition(jt::Vector2f pos) { playerPos = pos; }
