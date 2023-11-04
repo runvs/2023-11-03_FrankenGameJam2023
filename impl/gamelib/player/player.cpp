@@ -10,11 +10,20 @@
 namespace {
 std::string selectWalkAnimation(jt::Vector2f const& velocity)
 {
+    auto const l = jt::MathHelper::lengthSquared(velocity);
+    if (l < 20.0f) {
+        return "";
+    }
+
     auto a = jt::MathHelper::angleOf(velocity);
 
-    std::cout << velocity.x << " " << velocity.y << " " << a << "\n";
+    if (a < 0) {
+        a += 360.0f;
+    }
 
-    if (a > 0 && a < 22.5) {
+    //    std::cout << velocity.x << " " << velocity.y << " " << a << std::endl;
+
+    if (a >= 0 && a < 22.5) {
         return "right";
     } else if (a < 22.5f + 45 * 1) {
         return "up-right";
@@ -30,9 +39,10 @@ std::string selectWalkAnimation(jt::Vector2f const& velocity)
         return "down";
     } else if (a < 22.5f + 45 * 7) {
         return "down-right";
-    } else if (a < 360) {
+    } else if (a <= 360) {
         return "right";
     }
+    return "";
 }
 } // namespace
 

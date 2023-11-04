@@ -35,6 +35,9 @@ void GraphicsComponentImpl::flash(float time, jt::Color const& color)
 
 bool GraphicsComponentImpl::setAnimationIfNotSet(std::string const& newAnimationName)
 {
+    if (newAnimationName == "") {
+        return false;
+    }
     std::string const currentAnimationName = m_animation->getCurrentAnimationName();
 
     if (currentAnimationName != newAnimationName) {
