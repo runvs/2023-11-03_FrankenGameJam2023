@@ -115,13 +115,15 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                     harbor->pickUpFruit();
                     m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
                 }
-
             } else {
-                // TODO check if special fruit requested
-                if (harbor->canBeInteractedWith()) {
-                    m_player->getCargo().removeFruit("");
-                    m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
-                    harbor->deliverFruit();
+                if (m_player->getCargo().getNumberOfFruits() > 0) {
+                    if (harbor->canBeInteractedWith()) {
+                        // TODO check if special fruit requested
+                        m_player->getCargo().removeFruit("");
+                        m_hud->getObserverScoreP1()->notify(
+                            m_player->getCargo().getNumberOfFruits());
+                        harbor->deliverFruit();
+                    }
                 }
             }
         }
