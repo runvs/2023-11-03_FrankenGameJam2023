@@ -47,13 +47,18 @@ void StateGame::createPlayer()
 
 void StateGame::createHarbors()
 {
-
     m_harbors = std::make_shared<jt::ObjectGroup<Harbor>>();
     add(m_harbors);
 
-    auto const harbor = std::make_shared<Harbor>(GP::GetScreenSize() * 0.5f);
+    // TODO create harbors based on map
+    auto const harbor = std::make_shared<Harbor>(GP::GetScreenSize() * 0.5f, true);
     add(harbor);
     m_harbors->push_back(harbor);
+
+    auto const harbor2 = std::make_shared<Harbor>(
+        GP::GetScreenSize() * 0.5f + jt::Vector2f { GP::GetScreenSize().x * 0.25f, 0.0f }, false);
+    add(harbor2);
+    m_harbors->push_back(harbor2);
 }
 
 void StateGame::onUpdate(float const elapsed)

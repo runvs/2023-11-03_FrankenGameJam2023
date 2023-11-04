@@ -1,10 +1,10 @@
 #include "harbor.hpp"
 #include <game_properties.hpp>
 
-Harbor::Harbor(jt::Vector2f const& pos)
+Harbor::Harbor(jt::Vector2f const& pos, bool isOffering)
     : m_pos { pos }
+    , m_isOffering { isOffering }
 {
-    m_isOffering = true;
 }
 
 jt::Vector2f Harbor::getPosition() const { return m_pos; }

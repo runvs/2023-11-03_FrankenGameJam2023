@@ -6,7 +6,7 @@
 
 class Harbor : public jt::GameObject {
 public:
-    explicit Harbor(jt::Vector2f const& pos);
+    Harbor(jt::Vector2f const& pos, bool offering);
 
     jt::Vector2f getPosition() const;
 
