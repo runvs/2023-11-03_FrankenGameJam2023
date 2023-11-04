@@ -53,6 +53,12 @@ GraphicsComponentInterface& Monkey::getGraphics()
 
 void Monkey::doCreate()
 {
+    b2FixtureDef fixtureDef;
+    b2CircleShape circleCollider {};
+    circleCollider.m_radius = 8.0f;
+    fixtureDef.shape = &circleCollider;
+    m_b2Object->getB2Body()->CreateFixture(&fixtureDef);
+
     m_graphics = std::make_unique<GraphicsComponentImpl>(getGame(), "assets/affe.aseprite");
     m_ai = std::make_unique<AiComponentImpl>();
 }
