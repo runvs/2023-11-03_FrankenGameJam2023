@@ -3,6 +3,7 @@
 
 #include <box2dwrapper/box2d_object.hpp>
 #include <game_object.hpp>
+#include <player/cargo_component.hpp>
 #include <player/graphics/graphics_component_interface.hpp>
 #include <player/input/input_component_interface.hpp>
 #include <player/sound/sound_component_interface.hpp>
@@ -13,12 +14,19 @@ class Player : public jt::GameObject {
 public:
     Player(std::shared_ptr<jt::Box2DWorldInterface> world);
 
+    jt::Vector2f getPosition() const;
+
+    GraphicsComponentInterface& getGraphics();
+    CargoComponent& getCargo();
+
 private:
     std::unique_ptr<InputComponentInterface> m_input { nullptr };
     std::unique_ptr<GraphicsComponentInterface> m_graphics { nullptr };
     std::unique_ptr<SoundComponentInterface> m_sound { nullptr };
 
     std::unique_ptr<jt::Box2DObject> m_b2Object { nullptr };
+
+    CargoComponent m_cargo;
 
     virtual void doCreate();
     virtual void doUpdate(float const elapsed);

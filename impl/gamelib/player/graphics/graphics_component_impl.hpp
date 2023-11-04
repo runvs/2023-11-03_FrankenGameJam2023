@@ -18,6 +18,8 @@ public:
     bool setAnimationIfNotSet(std::string const& newAnimationName) override;
     std::string getCurrentAnimation() const override;
 
+    std::shared_ptr<jt::DrawableInterface> getDrawable() override;
+
 private:
     void createAnimation(jt::TextureManagerInterface& textureManager);
     std::shared_ptr<jt::Animation> m_animation;
