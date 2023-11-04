@@ -50,7 +50,7 @@ private:
 
     void endGame();
     void createPlayer();
-    void createHarbors();
+    void createHarbors(jt::tilemap::TilesonLoader& loader);
     void updateHarbors(float const elapsed);
     void updateCamera(float const elapsed);
     void loadLevelCollisions(jt::tilemap::TilesonLoader& loader);

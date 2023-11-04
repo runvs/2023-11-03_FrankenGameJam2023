@@ -23,7 +23,7 @@ void StateGame::onCreate()
     loadLevelCollisions(loader);
 
     createPlayer();
-    createHarbors();
+    createHarbors(loader);
 
     m_vignette = std::make_shared<jt::Vignette>(GP::GetScreenSize());
     add(m_vignette);
@@ -42,20 +42,20 @@ void StateGame::createPlayer()
     add(m_player);
 }
 
-void StateGame::createHarbors()
+void StateGame::createHarbors(jt::tilemap::TilesonLoader& loader)
 {
     m_harbors = std::make_shared<jt::ObjectGroup<Harbor>>();
     add(m_harbors);
 
-    // TODO create harbors based on map
-    auto const harbor = std::make_shared<Harbor>(GP::GetScreenSize() * 0.5f, true);
-    add(harbor);
-    m_harbors->push_back(harbor);
+    auto const harborObjects = loader.loadObjectsFromLayer("harbors");
 
-    auto const harbor2 = std::make_shared<Harbor>(
-        GP::GetScreenSize() * 0.5f + jt::Vector2f { GP::GetScreenSize().x * 0.25f, 0.0f }, false);
-    add(harbor2);
-    m_harbors->push_back(harbor2);
+    for (auto const& h : harborObjects) {
+        bool isOffering
+            = h.properties.bools.contains("isOffering") && h.properties.bools.at("isOffering");
+        auto const harbor = std::make_shared<Harbor>(h.position, isOffering);
+        add(harbor);
+        m_harbors->push_back(harbor);
+    }
 }
 
 void StateGame::onUpdate(float const elapsed)
