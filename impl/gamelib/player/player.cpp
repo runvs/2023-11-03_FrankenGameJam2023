@@ -82,6 +82,8 @@ GraphicsComponentInterface& Player::getGraphics() { return *m_graphics; }
 
 CargoComponent& Player::getCargo() { return m_cargo; }
 
+jt::Vector2f Player::getVelocity() const { return m_b2Object->getVelocity(); }
+
 void Player::clampPositionOnMap(jt::Vector2f const& mapSize)
 {
     auto pos = m_b2Object->getPosition();

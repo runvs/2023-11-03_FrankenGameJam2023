@@ -156,35 +156,14 @@ void StateGame::updateMonkeys()
 
 void StateGame::updateCamera(float const elapsed)
 {
-    float const camMovementSpeed = 60;
-    auto playerPositionOnScreen = m_player->getGraphics().getDrawable()->getScreenPosition();
-    if (playerPositionOnScreen.x < GP::ScreenSizeScrollBound() * 1.5) {
-        getGame()->gfx().camera().move(jt::Vector2f { -camMovementSpeed * elapsed, 0.0f });
-    } else if (playerPositionOnScreen.x + 8
-        > GP::GetScreenSize().x - GP::ScreenSizeScrollBound() * 1.5) {
-        getGame()->gfx().camera().move(jt::Vector2f { camMovementSpeed * elapsed, 0.0f });
+    auto speedOffset = m_player->getVelocity();
+    if (jt::MathHelper::length(speedOffset) > 64) {
+        jt::MathHelper::normalizeMe(speedOffset);
+        speedOffset.x *= 64.0f;
+        speedOffset.y *= 64.0f;
     }
 
-    if (playerPositionOnScreen.y < GP::ScreenSizeScrollBound() * 1.5) {
-        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, -camMovementSpeed * elapsed });
-    } else if (playerPositionOnScreen.y + 8
-        > GP::GetScreenSize().y - GP::ScreenSizeScrollBound() * 1.5) {
-        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, camMovementSpeed * elapsed });
-    }
-
-    if (playerPositionOnScreen.x < GP::ScreenSizeScrollBound()) {
-        getGame()->gfx().camera().move(jt::Vector2f { -camMovementSpeed * elapsed, 0.0f });
-    } else if (playerPositionOnScreen.x + 8 > GP::GetScreenSize().x - GP::ScreenSizeScrollBound()) {
-        getGame()->gfx().camera().move(jt::Vector2f { camMovementSpeed * elapsed, 0.0f });
-    }
-
-    if (playerPositionOnScreen.y < GP::ScreenSizeScrollBound()) {
-        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, -camMovementSpeed * elapsed });
-    } else if (playerPositionOnScreen.y + 8 > GP::GetScreenSize().y - GP::ScreenSizeScrollBound()) {
-        getGame()->gfx().camera().move(jt::Vector2f { 0.0f, camMovementSpeed * elapsed });
-    }
-
-    auto camPos = getGame()->gfx().camera().getCamOffset();
+    auto camPos = m_player->getPosition() + speedOffset - GP::GetScreenSize() * 0.5f;
     jt::Vector2f const camPosMax { m_tilemap->getMapSizeInPixel() - GP::GetScreenSize() };
     camPos = jt::MathHelper::clamp(camPos, jt::Vector2f { 0.0f, 0.0f }, camPosMax);
     getGame()->gfx().camera().setCamOffset(camPos);
