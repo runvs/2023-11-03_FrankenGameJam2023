@@ -8,6 +8,7 @@
 #include <lerp.hpp>
 #include <log/license_info.hpp>
 #include <math_helper.hpp>
+#include <oalpp/effects/utility/gain.hpp>
 #include <screeneffects/vignette.hpp>
 #include <state_game.hpp>
 #include <state_manager/state_manager_transition_fade_to_black.hpp>
@@ -26,6 +27,12 @@ void StateMenu::onCreate()
 
     getGame()->stateManager().setTransition(std::make_shared<jt::StateManagerTransitionFadeToBlack>(
         GP::GetScreenSize(), textureManager()));
+
+    oalpp::effects::utility::Gain gain { 1.0f };
+    auto bgm = getGame()->audio().addPermanentSound(
+        "bgm", "assets/sfx/theme-main-start.ogg", "assets/sfx/theme-main-loop.ogg", gain);
+    bgm->setVolumeGroup("music");
+    bgm->play();
 }
 
 void StateMenu::onEnter()

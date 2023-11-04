@@ -35,7 +35,8 @@ std::string selectWalkAnimation(float const a)
 }
 } // namespace
 
-Monkey::Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f const position) {
+Monkey::Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f const position)
+{
     b2BodyDef def {};
     def.type = b2BodyType::b2_dynamicBody;
     def.linearDamping = 1.0;
@@ -46,10 +47,7 @@ Monkey::Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f cons
 
 jt::Vector2f Monkey::getPosition() const { return m_b2Object->getPosition(); }
 
-GraphicsComponentInterface& Monkey::getGraphics()
-{
-    return *m_graphics;
-}
+GraphicsComponentInterface& Monkey::getGraphics() { return *m_graphics; }
 
 void Monkey::doCreate()
 {
@@ -69,10 +67,17 @@ void Monkey::doUpdate(float const elapsed)
     m_graphics->setPosition(m_b2Object->getPosition());
     m_graphics->setAnimationIfNotSet(selectWalkAnimation(m_ai->getRotationAngle()));
     m_graphics->updateGraphics(elapsed);
+
+    m_attackTimer -= elapsed;
 }
 
 void Monkey::doDraw() const { m_graphics->draw(renderTarget()); }
 
-void Monkey::updatePlayerPosition(jt::Vector2f const playerPos) {
+void Monkey::updatePlayerPosition(jt::Vector2f const playerPos)
+{
     m_ai->updatePlayerPosition(playerPos);
 }
+
+bool Monkey::canAttack() const { return m_attackTimer <= 0; }
+
+void Monkey::attack() { m_attackTimer = 1.0f; }

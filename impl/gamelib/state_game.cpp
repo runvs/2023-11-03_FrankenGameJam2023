@@ -21,6 +21,8 @@ void StateGame::onCreate()
     m_tilemap = std::make_shared<jt::tilemap::TileLayer>(
         loader.loadTilesFromLayer("ground", textureManager()));
     loadLevelCollisions(loader);
+    m_overlay = std::make_shared<jt::tilemap::TileLayer>(
+        loader.loadTilesFromLayer("overlay", textureManager()));
 
     createPlayer();
 
@@ -34,6 +36,11 @@ void StateGame::onCreate()
 
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
+
+    m_soundFruitPickup = getGame()->audio().addTemporarySound("assets/sfx/fruit-pickup.ogg");
+    m_soundFruitDeliver = getGame()->audio().addTemporarySound("assets/sfx/reward.ogg");
+    m_soundMonkeyHitsEnemy
+        = getGame()->audio().addTemporarySound("assets/sfx/monkey-hits-boat.ogg");
 }
 
 void StateGame::onEnter() { }
@@ -90,6 +97,7 @@ void StateGame::onUpdate(float const elapsed)
     }
 
     m_tilemap->update(elapsed);
+    m_overlay->update(elapsed);
     m_vignette->update(elapsed);
 }
 
@@ -97,6 +105,7 @@ void StateGame::onDraw() const
 {
     m_tilemap->draw(renderTarget());
     drawObjects();
+    m_overlay->draw(renderTarget());
     m_vignette->draw();
     m_hud->draw();
 }
@@ -110,7 +119,7 @@ void StateGame::endGame()
     m_hasEnded = true;
     m_running = false;
 
-    getGame()->stateManager().switchToStoredState("menu");
+    getGame()->stateManager().switchState(std::make_shared<StateMenu>());
 }
 
 std::string StateGame::getName() const { return "State Game"; }
@@ -129,6 +138,7 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                     m_player->getCargo().addFruit(harbor->getFruitOffering());
                     harbor->pickUpFruit();
                     m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
+                    m_soundFruitPickup->play();
                 }
             } else {
                 if (m_player->getCargo().getNumberOfFruits() > 0) {
@@ -138,6 +148,7 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                         m_hud->getObserverScoreP1()->notify(
                             m_player->getCargo().getNumberOfFruits());
                         harbor->deliverFruit();
+                        m_soundFruitDeliver->play();
                     }
                 }
             }
@@ -151,6 +162,16 @@ void StateGame::updateMonkeys()
     for (auto const& m : *m_monkeys) {
         auto monkey = m.lock();
         monkey->updatePlayerPosition(playerPos);
+
+        if (monkey->canAttack()) {
+            auto const monkeyPos = monkey->getPosition();
+            auto const l = jt::MathHelper::lengthSquared(playerPos - monkeyPos);
+            if (l <= GP::TileSizeInPixel() * GP::TileSizeInPixel()) {
+                m_soundMonkeyHitsEnemy->play();
+                m_player->getDamage();
+                monkey->attack();
+            }
+        }
     }
 }
 
@@ -207,7 +228,7 @@ void StateGame::loadLevelCollisions(jt::tilemap::TilesonLoader& loader)
         fixtureDef.shape = &boxCollider;
 
         auto collider = std::make_shared<jt::Box2DObject>(m_world, &bodyDef);
-        
+
         collider->getB2Body()->CreateFixture(&fixtureDef);
 
         m_colliders.push_back(collider);

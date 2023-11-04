@@ -7,7 +7,6 @@
 #include <player/cargo_component.hpp>
 #include <player/graphics/graphics_component_interface.hpp>
 #include <player/input/input_component_interface.hpp>
-#include <player/sound/sound_component_interface.hpp>
 
 class StateGame;
 
@@ -22,10 +21,11 @@ public:
 
     void clampPositionOnMap(jt::Vector2f const& mapSize);
 
+    void getDamage();
+
 private:
     std::unique_ptr<InputComponentInterface> m_input { nullptr };
     std::unique_ptr<GraphicsComponentInterface> m_graphics { nullptr };
-    std::unique_ptr<SoundComponentInterface> m_sound { nullptr };
 
     std::unique_ptr<jt::Box2DObject> m_b2Object { nullptr };
 
