@@ -30,8 +30,8 @@ void StateGame::onCreate()
             0.0f, 0.0f, m_tilemap->getMapSizeInPixel().x, m_tilemap->getMapSizeInPixel().y },
         m_tileCollisionRects, 100);
     add(m_waves);
-    createPlayer();
 
+    createPlayer();
     createHarbors(loader);
     spawnMonkey();
 
@@ -193,7 +193,9 @@ void StateGame::updateMonkeys()
     auto const playerPos = m_player->getPosition();
     for (auto const& m : *m_monkeys) {
         auto monkey = m.lock();
+        
         monkey->updatePlayerPosition(playerPos);
+        monkey->clampPositionOnMap(m_tilemap->getMapSizeInPixel());
 
         if (monkey->canAttack()) {
             auto const monkeyPos = monkey->getPosition();

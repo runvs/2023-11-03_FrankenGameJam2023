@@ -1,6 +1,7 @@
 #include "monkey.h"
-#include "player/graphics/graphics_component_impl.hpp"
-#include "monkey/ai/ai_component_impl.h"
+#include <math_helper.hpp>
+#include <player/graphics/graphics_component_impl.hpp>
+#include <monkey/ai/ai_component_impl.h>
 
 namespace {
 std::string selectWalkAnimation(float const a)
@@ -69,6 +70,13 @@ void Monkey::doUpdate(float const elapsed)
     m_graphics->updateGraphics(elapsed);
 
     m_attackTimer -= elapsed;
+}
+
+void Monkey::clampPositionOnMap(jt::Vector2f const& mapSize)
+{
+    auto pos = m_b2Object->getPosition();
+    pos = jt::MathHelper::clamp(pos, { 0.0f, 0.0f }, mapSize);
+    m_b2Object->setPosition(pos);
 }
 
 void Monkey::doDraw() const { m_graphics->draw(renderTarget()); }

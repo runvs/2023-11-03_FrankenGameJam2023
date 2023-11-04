@@ -20,6 +20,8 @@ public:
     bool canAttack() const;
     void attack();
 
+    void clampPositionOnMap(jt::Vector2f const& mapSize);
+
 private:
     std::unique_ptr<GraphicsComponentInterface> m_graphics { nullptr };
     std::unique_ptr<AiComponentInterface> m_ai { nullptr };
