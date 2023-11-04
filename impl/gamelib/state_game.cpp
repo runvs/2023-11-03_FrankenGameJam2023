@@ -105,11 +105,17 @@ void StateGame::updateHarbors(float const /*elapsed*/)
         if (l < GP::TileSizeInPixel()) {
             m_player->getGraphics().getDrawable()->flash(0.1f, jt::colors::Yellow);
             if (harbor->isOffering()) {
-                m_player->getCargo().addFruit(harbor->getFruitOffering());
-                harbor->pickUpFruit();
+                if (harbor->hasFruitToOffer()) {
+                    m_player->getCargo().addFruit(harbor->getFruitOffering());
+                    harbor->pickUpFruit();
+                    m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
+                }
+
             } else {
                 // TODO check if special fruit requested
                 m_player->getCargo().removeFruit("");
+                m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
+                harbor->deliverFruit();
             }
         }
     }

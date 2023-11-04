@@ -8,6 +8,8 @@ public:
     void addFruit(std::string const& fruit);
     void removeFruit(std::string const& fruit);
 
+    int getNumberOfFruits() const;
+
 private:
     int m_fruits { 0 };
 };

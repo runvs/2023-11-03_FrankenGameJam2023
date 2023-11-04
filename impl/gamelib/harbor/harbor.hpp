@@ -15,6 +15,7 @@ public:
 
     bool isOffering() const;
     std::string getFruitOffering() const;
+    bool hasFruitToOffer() const;
 
 private:
     void doCreate() override;

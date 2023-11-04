@@ -35,15 +35,11 @@ void Harbor::deliverFruit() { }
 void Harbor::pickUpFruit()
 {
     m_fruitOffer = "";
-    m_offerTimer = 1.0f;
+    m_offerTimer = GP::OfferTimerMaxValue();
 }
 
-bool Harbor::isOffering() const
-{
-    if (m_isOffering) {
-        return m_offerTimer <= 0;
-    }
-    return false;
-}
+bool Harbor::isOffering() const { return m_isOffering; }
 
 std::string Harbor::getFruitOffering() const { return m_fruitOffer; }
+
+bool Harbor::hasFruitToOffer() const { return m_offerTimer <= 0; }
