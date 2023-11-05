@@ -52,7 +52,7 @@ void InputComponentImpl::updateMovement(InputTargetInterface& target, float cons
         target.setVelocity(target.getVelocity() * GP::playerBreakMultiplier);
     }
 
-    std::cout << jt::MathHelper::length(target.getVelocity()) << std::endl;
+    //    std::cout << jt::MathHelper::length(target.getVelocity()) << std::endl;
     if (shiftJustPressed) {
         if (m_timeSinceShiftJustPressed > 0.2f) {
             m_timeSinceShiftJustPressed = 0.0f;

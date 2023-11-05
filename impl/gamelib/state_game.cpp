@@ -31,6 +31,9 @@ void StateGame::onCreate()
         m_tileCollisionRects, 100);
     add(m_waves);
 
+    m_trailingWaves = std::make_shared<jt::TrailingWaves>();
+    add(m_trailingWaves);
+
     createHarbors(loader);
     createPlayer();
     spawnMonkey();
@@ -138,6 +141,7 @@ void StateGame::onUpdate(float const elapsed)
 void StateGame::onDraw() const
 {
     m_tilemap->draw(renderTarget());
+    m_trailingWaves->draw();
     m_overlay->draw(renderTarget());
     drawObjects();
 
@@ -266,4 +270,12 @@ void StateGame::loadLevelCollisions(jt::tilemap::TilesonLoader& loader)
 void StateGame::updatePlayer()
 {
     m_player->clampPositionOnMap(m_tilemap->getMapSizeInPixel() - jt::Vector2f { 16.0f, 16.0f });
+    m_trailingWaves->setPosition(m_player->getPosition());
+    if (jt::MathHelper::lengthSquared(m_player->getVelocity()) > 70.0f * 70.0f) {
+        m_trailingWaves->setTimerMax(0.05f);
+    } else if (jt::MathHelper::lengthSquared(m_player->getVelocity()) > 10.0f) {
+        m_trailingWaves->setTimerMax(0.2f);
+    } else {
+        m_trailingWaves->setTimerMax(-1.0f);
+    }
 }

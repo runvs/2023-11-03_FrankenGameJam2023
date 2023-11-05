@@ -7,6 +7,7 @@
 #include <harbor/harbor.hpp>
 #include <object_group.hpp>
 #include <player/player.hpp>
+#include <screeneffects/trailing_waves.hpp>
 #include <screeneffects/waves.hpp>
 #include <tilemap/tile_layer.hpp>
 #include "monkey/monkey.h"
@@ -44,6 +45,7 @@ private:
     std::vector<jt::Rectf> m_tileCollisionRects {};
 
     std::shared_ptr<jt::Waves> m_waves {};
+    std::shared_ptr<jt::TrailingWaves> m_trailingWaves {};
 
     std::shared_ptr<jt::SoundInterface> m_soundFruitPickup;
     std::shared_ptr<jt::SoundInterface> m_soundFruitDeliver;

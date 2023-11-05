@@ -1,0 +1,53 @@
+#include "trailing_waves.hpp"
+#include <random/random.hpp>
+#include <tweens/tween_alpha.hpp>
+
+void jt::TrailingWaves::doCreate()
+{
+    m_tweens = std::make_shared<jt::TweenCollection>();
+    m_particles = jt::ParticleSystem<jt::Animation, 60>::createPS(
+        [this]() {
+            auto a = std::make_shared<jt::Animation>();
+            a->loadFromAseprite("assets/circles.aseprite", textureManager());
+            a->play("idle");
+
+            a->setOffset(jt::OffsetMode::CENTER);
+            a->setPosition(jt::Vector2f { -2000.0f, -2000.0f });
+            return a;
+        },
+        [this](auto& a, auto pos) {
+            jt::Color startColor { 255u, 255u, 255u,
+                static_cast<std::uint8_t>(jt::Random::getInt(140, 170)) };
+            a->setColor(startColor);
+            a->setPosition(pos);
+            a->update(0.0f);
+            a->play("idle", 0, true);
+
+            auto twa = jt::TweenAlpha::create(a,
+                a->getCurrentAnimTotalTime() * jt::Random::getFloat(0.75f, 0.95f), startColor.a,
+                0u);
+            this->m_tweens->add(twa);
+        });
+
+    m_particles->setGameInstance(getGame());
+}
+
+void jt::TrailingWaves::doUpdate(float const elapsed)
+{
+    m_tweens->update(elapsed);
+    m_particles->update(elapsed);
+
+    m_timer += elapsed;
+    if (m_timerMax > 0) {
+        if (m_timer >= m_timerMax) {
+            m_timer = 0.0f;
+            m_particles->fire(1, m_pos);
+        }
+    }
+}
+
+void jt::TrailingWaves::doDraw() const { m_particles->draw(); }
+
+void jt::TrailingWaves::setPosition(jt::Vector2f const& pos) { m_pos = pos; }
+
+void jt::TrailingWaves::setTimerMax(float max) { m_timerMax = max; }

@@ -59,6 +59,8 @@ public:
     static float ScreenSizeScrollBound();
     static inline constexpr auto playerMaxVelocity = 65.0f;
     static inline constexpr auto playerMaxVelocityWhenBoosting = 140.0f;
+
+    static inline constexpr auto ZLayerBoat = 10;
 };
 
 #endif
