@@ -20,7 +20,8 @@ public:
 
     static std::string ExplanationText()
     {
-        return "Win the game\n[W,A,S,D] to move \n[Space] to jump\n[M/U] to mute/unmute audio";
+        return "Take and give Fruits\n[W,A,S,D] to move \n[Shift] to boost\n[M/U] to mute/unmute "
+               "audio";
     }
 
     static jt::Vector2f GetWindowSize() { return jt::Vector2f { 1280, 960 }; }
@@ -31,9 +32,9 @@ public:
 
     static jt::Color PaletteBackground() { return GP::getPalette().getColor(4); }
 
-    static jt::Color PaletteFontFront() { return GP::getPalette().getColor(0); }
+    static jt::Color PaletteFontFront() { return jt::Color { 235, 211, 32, 255 }; }
 
-    static jt::Color PalleteFrontHighlight() { return GP::getPalette().getColor(1); }
+    static jt::Color PalleteFrontHighlight() { return jt::Color { 187, 16, 48, 255 }; }
 
     static jt::Color PaletteFontShadow() { return GP::getPalette().getColor(2); }
 

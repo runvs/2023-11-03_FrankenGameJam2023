@@ -31,6 +31,9 @@ void StateGame::onCreate()
         m_tileCollisionRects, 100);
     add(m_waves);
 
+    m_dropFruitPS = std::make_shared<ParticleSystemDropFruits>();
+    add(m_dropFruitPS);
+
     createHarbors(loader);
     createPlayer();
     spawnMonkey();
@@ -141,6 +144,7 @@ void StateGame::onDraw() const
 
     m_overlay->draw(renderTarget());
     drawObjects();
+    m_dropFruitPS->draw();
 
     m_vignette->draw();
     m_hud->draw();
@@ -167,11 +171,14 @@ void StateGame::updateHarbors(float const /*elapsed*/)
         auto harbor = h.lock();
         auto const harborPos = harbor->getPosition();
         auto const l = jt::MathHelper::distanceBetweenSquared(harborPos, playerPos);
-        if (l < GP::TileSizeInPixel() * GP::TileSizeInPixel()) {
-            m_player->getGraphics().getDrawable()->flash(0.1f, jt::colors::Yellow);
+        if (l < GP::TileSizeInPixel() * GP::TileSizeInPixel() * 4) {
+            //            m_player->getGraphics().getDrawable()->flash(0.1f, jt::colors::Yellow);
             if (harbor->isOffering()) {
                 if (harbor->canBeInteractedWith()) {
-                    m_player->getCargo().addFruit(harbor->getFruitOffering());
+                    auto const harborFruits = harbor->getNumberOfFruitsToPickup();
+                    for (auto i = 0; i != harborFruits; ++i) {
+                        m_player->getCargo().addFruit("");
+                    }
                     harbor->pickUpFruit();
                     spawnMonkey();
                     m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
@@ -182,10 +189,16 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                     if (harbor->canBeInteractedWith()) {
                         // TODO check if special fruit requested
                         m_player->getCargo().removeFruit("");
+
                         m_hud->getObserverScoreP1()->notify(
                             m_player->getCargo().getNumberOfFruits());
+
+                        m_points += 1;
+                        m_hud->getObserverScoreP2()->notify(m_points);
+
                         harbor->deliverFruit();
                         m_soundFruitDeliver->play();
+                        m_player->getGraphics().flash(1.5f, jt::colors::White);
                     }
                 }
             }
@@ -208,6 +221,7 @@ void StateGame::updateMonkeys()
             if (l <= GP::TileSizeInPixel() * GP::TileSizeInPixel()) {
                 m_soundMonkeyHitsEnemy->play();
                 m_player->getDamage();
+                m_dropFruitPS->fire(4, m_player->getPosition());
                 monkey->attack();
                 // TODO visual effect
                 m_player->getCargo().removeFruit("");

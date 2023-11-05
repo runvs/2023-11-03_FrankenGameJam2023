@@ -1,6 +1,7 @@
 ﻿#ifndef GAME_STATE_GAME_HPP
 #define GAME_STATE_GAME_HPP
 
+#include "particle_system_drop_fruits.hpp"
 #include <audio/sound/sound_interface.hpp>
 #include <box2dwrapper/box2d_world_interface.hpp>
 #include <game_state.hpp>
@@ -46,6 +47,8 @@ private:
 
     std::shared_ptr<jt::Waves> m_waves {};
 
+    std::shared_ptr<ParticleSystemDropFruits> m_dropFruitPS {};
+
     std::shared_ptr<jt::SoundInterface> m_soundFruitPickup;
     std::shared_ptr<jt::SoundInterface> m_soundFruitDeliver;
     std::shared_ptr<jt::SoundInterface> m_soundMonkeyHitsEnemy;
@@ -53,6 +56,7 @@ private:
     bool m_running { true };
     bool m_hasEnded { false };
 
+    int m_points { 0 };
     jt::Vector2f m_lastFrameCameraOffset = jt::Vector2f { 0.0f, 0.0f };
 
     void onCreate() override;
