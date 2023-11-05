@@ -64,6 +64,8 @@ public:
     static inline constexpr auto playerMaxVelocityWhenBoosting = 140.0f;
 
     static inline constexpr auto ZLayerBoat = 10;
+    static inline constexpr auto ZLayerClouds = 15;
+    static inline constexpr auto ZLayerHUD = 20;
 };
 
 #endif
