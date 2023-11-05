@@ -34,6 +34,11 @@ private:
 
     std::shared_ptr<jt::Shape> m_vinyl;
 
+    /// 0 = A,
+    /// 1 = B,
+    /// 2 = C
+    int selected { 0 };
+
     int m_score { 0 };
 
     bool m_started { false };
