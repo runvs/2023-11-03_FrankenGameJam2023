@@ -54,10 +54,19 @@ void StateGame::onCreate()
     m_soundFruitDeliver = getGame()->audio().addTemporarySound("assets/sfx/reward.ogg");
     m_soundMonkeyHitsEnemy
         = getGame()->audio().addTemporarySound("assets/sfx/monkey-hits-boat.ogg");
-    m_soundMonkeyScreams.push_back(
-        getGame()->audio().soundPool("monkey-1", "assets/sfx/fruit-pickup.ogg", 3));
-    m_soundMonkeyScreams.push_back(
-        getGame()->audio().soundPool("monkey-2", "assets/sfx/fruit-pickup.ogg", 3));
+
+    for (auto i = 0; i != 10; ++i) {
+        auto const str = std::to_string(i);
+        m_soundMonkeyScreams.push_back(getGame()->audio().soundPool(
+            "monkey-" + str, "assets/sfx/affengeschrei0" + str + ".ogg", 3));
+    }
+
+    std::vector<std::shared_ptr<jt::SoundInterface>> sounds {};
+    for (auto i = 1; i != 4; ++i) {
+        sounds.push_back(getGame()->audio().addTemporarySound(
+            "assets/sfx/monkey_got_fruit0" + std::to_string(i) + ".ogg"));
+    }
+    m_soundmonkeyGotFruit = getGame()->audio().addTemporarySoundGroup(sounds);
 }
 
 void StateGame::onEnter() { }
@@ -67,7 +76,15 @@ void StateGame::createPlayer()
     m_player = std::make_shared<Player>(m_world);
 
     // TODO spawn at correct harbor
-    m_player->setPosition(m_harbors->at(0).lock()->getPosition());
+    for (auto& h : *m_harbors) {
+        auto harbor = h.lock();
+        if (harbor->isOffering()) {
+            continue;
+        } else {
+            m_player->setPosition(harbor->getPosition());
+            break;
+        }
+    }
 
     add(m_player);
 }
@@ -233,6 +250,8 @@ void StateGame::updateMonkeys()
             if (l <= GP::TileSizeInPixel() * GP::TileSizeInPixel()) {
                 m_soundMonkeyHitsEnemy->play();
                 m_player->getDamage();
+                getGame()->gfx().camera().shake(0.5f, 4);
+                m_soundmonkeyGotFruit->play();
 
                 monkey->attack();
 

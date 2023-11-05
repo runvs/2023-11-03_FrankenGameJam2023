@@ -55,13 +55,18 @@ void StateMenu::onCreate()
     if (!bgmc) {
         bgmc = getGame()->audio().addPermanentSound("bgmc", "assets/sfx/theme-C.ogg");
         bgmc->setVolumeGroup("music");
+        bgmc->setLoop(true);
         bgmc->play();
     }
     bgmc->setVolume(0.0f);
 
-    m_vinyl = std::make_shared<jt::Shape>();
-    m_vinyl->makeCircle(16.0f, textureManager());
-    //    m_vinyl->loadFromAseprite("assets/vinyl.ogg", textureManager());
+    m_vinyl = std::make_shared<jt::Animation>();
+    m_vinyl->loadFromAseprite("assets/disc.aseprite", textureManager());
+    m_vinyl->setScale({ 2.0f, 2.0f });
+    m_vinyl->setLooping("0to1", false);
+    m_vinyl->setLooping("1to2", false);
+    m_vinyl->setLooping("2to0", false);
+    m_vinyl->play("2to0", true);
     m_vinyl->setPosition(jt::Vector2f { 280, 100 });
 }
 
@@ -245,17 +250,19 @@ void StateMenu::onUpdate(float const elapsed)
             getGame()->audio().fades().volumeFade(bgma, time, aVolume, 1.0f);
             getGame()->audio().fades().volumeFade(bgmb, time, bVolume, 0.0f);
             getGame()->audio().fades().volumeFade(bgmc, time, cVolume, 0.0f);
+            m_vinyl->play("2to0", true);
         } else if (selected == 1) {
             getGame()->audio().fades().volumeFade(bgma, time, aVolume, 0.0f);
             getGame()->audio().fades().volumeFade(bgmb, time, bVolume, 1.0f);
             getGame()->audio().fades().volumeFade(bgmc, time, cVolume, 0.0f);
+            m_vinyl->play("0to1", true);
+
         } else {
             getGame()->audio().fades().volumeFade(bgma, time, aVolume, 0.0f);
             getGame()->audio().fades().volumeFade(bgmb, time, bVolume, 0.0f);
             getGame()->audio().fades().volumeFade(bgmc, time, cVolume, 1.0f);
+            m_vinyl->play("1to2", true);
         }
-
-        m_vinyl->flash(0.5f, jt::colors::White);
     }
 }
 

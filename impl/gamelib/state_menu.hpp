@@ -32,7 +32,7 @@ private:
     std::shared_ptr<jt::Shape> m_overlay;
     std::shared_ptr<jt::Vignette> m_vignette;
 
-    std::shared_ptr<jt::Shape> m_vinyl;
+    std::shared_ptr<jt::Animation> m_vinyl;
 
     /// 0 = A,
     /// 1 = B,
