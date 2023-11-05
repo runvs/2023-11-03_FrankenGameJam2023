@@ -38,6 +38,9 @@ void StateGame::onCreate()
     createPlayer();
     spawnMonkey();
 
+    m_clouds
+        = std::make_shared<MarioClouds>(m_tilemap->getMapSizeInPixel(), jt::Vector2f { 128, 128 });
+    add(m_clouds);
     m_vignette = std::make_shared<jt::Vignette>(GP::GetScreenSize());
     add(m_vignette);
     m_hud = std::make_shared<Hud>();
@@ -146,6 +149,7 @@ void StateGame::onDraw() const
     drawObjects();
     m_dropFruitPS->draw();
 
+    m_clouds->draw();
     m_vignette->draw();
     m_hud->draw();
 }
@@ -221,10 +225,16 @@ void StateGame::updateMonkeys()
             if (l <= GP::TileSizeInPixel() * GP::TileSizeInPixel()) {
                 m_soundMonkeyHitsEnemy->play();
                 m_player->getDamage();
-                m_dropFruitPS->fire(4, m_player->getPosition());
+
                 monkey->attack();
-                // TODO visual effect
-                m_player->getCargo().removeFruit("");
+
+                if (m_player->getCargo().getNumberOfFruits() > 0) {
+                    for (auto i = 0; i != 2; ++i) {
+                        m_player->getCargo().removeFruit("");
+                    }
+                    m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
+                    m_dropFruitPS->fire(4, m_player->getPosition());
+                }
             }
         }
     }

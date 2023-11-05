@@ -13,15 +13,19 @@ void jt::Vignette::doCreate()
             + "#" + std::to_string(static_cast<int>(m_size.y)),
         textureManager());
     m_vignette->setIgnoreCamMovement(true);
+    m_vignette->setZ(20);
     m_vignette->setColor({ 0, 0, 0, 140 });
 }
+
 void jt::Vignette::doUpdate(float const elapsed) { m_vignette->update(elapsed); }
+
 void jt::Vignette::doDraw() const
 {
     if (m_enabled) {
         m_vignette->draw(renderTarget());
     }
 }
+
 void jt::Vignette::setEnabled(bool enabled) { m_enabled = enabled; }
 
 void jt::Vignette::setColor(jt::Color const& col) { m_vignette->setColor(col); }
