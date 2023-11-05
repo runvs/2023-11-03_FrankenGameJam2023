@@ -48,6 +48,8 @@ std::string selectAnimation(float const angle, float velocity, MonkeyState state
         return direction + "-swim";
     case Angry:
         return direction + "-angry";
+    case Swim:
+        return direction + "-swim";
     case Hit:
         return direction + "-hit";
     }

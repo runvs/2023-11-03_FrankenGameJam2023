@@ -3,6 +3,7 @@
 
 enum MonkeyState {
     Idle,
+    Swim,
     Angry,
     Hit,
 };

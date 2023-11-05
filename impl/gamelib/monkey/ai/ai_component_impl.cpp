@@ -17,10 +17,6 @@ void AiComponentImpl::update(
         return;
     }
 
-    if (m_state == MonkeyState::Idle) {
-        m_state = MonkeyState::Angry;
-    }
-
     auto const targetRotation = jt::MathHelper::angleOf(diff);
     auto const rotationDistance = std::abs(rotationAngle - targetRotation);
 
@@ -37,6 +33,12 @@ void AiComponentImpl::update(
             rotationAngle = rotationAngle - GP::monkeyRotationSpeed * elapsed;
         }
     };
+
+    if (rotationDistance < 10) {
+        m_state = MonkeyState::Angry;
+    } else {
+        m_state = MonkeyState::Swim;
+    }
 
     if (rotationAngle > 180) {
         rotationAngle -= 360;
