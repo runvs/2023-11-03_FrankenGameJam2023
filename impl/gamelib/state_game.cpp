@@ -31,6 +31,9 @@ void StateGame::onCreate()
         m_tileCollisionRects, 100);
     add(m_waves);
 
+    m_dropFruitPS = std::make_shared<ParticleSystemDropFruits>();
+    add(m_dropFruitPS);
+
     createHarbors(loader);
     createPlayer();
     spawnMonkey();
@@ -141,6 +144,7 @@ void StateGame::onDraw() const
 
     m_overlay->draw(renderTarget());
     drawObjects();
+    m_dropFruitPS->draw();
 
     m_vignette->draw();
     m_hud->draw();
@@ -208,6 +212,7 @@ void StateGame::updateMonkeys()
             if (l <= GP::TileSizeInPixel() * GP::TileSizeInPixel()) {
                 m_soundMonkeyHitsEnemy->play();
                 m_player->getDamage();
+                m_dropFruitPS->fire(4, m_player->getPosition());
                 monkey->attack();
                 // TODO visual effect
                 m_player->getCargo().removeFruit("");
