@@ -12,11 +12,11 @@ InputComponentImpl::InputComponentImpl(std::shared_ptr<jt::KeyboardInterface> ke
 
 void InputComponentImpl::updateMovement(InputTargetInterface& target, float const elapsed)
 {
-    auto const shiftPressed = m_keyboard->pressed(jt::KeyCode::LShift);
-    auto const shiftJustPressed = m_keyboard->justPressed(jt::KeyCode::LShift);
+    auto const boostPressed = m_keyboard->pressed(jt::KeyCode::LShift) || m_keyboard->pressed(jt::KeyCode::Space);
+    auto const boostJustPressed = m_keyboard->justPressed(jt::KeyCode::LShift) || m_keyboard->justPressed(jt::KeyCode::Space);
     auto boost = false;
     auto maxVelocity = GP::playerMaxVelocity;
-    if (shiftPressed) {
+    if (boostPressed) {
         if (m_boostNitro > 0) {
             m_timeSinceShiftPressed = 0.0f;
             boost = true;
@@ -68,7 +68,7 @@ void InputComponentImpl::updateMovement(InputTargetInterface& target, float cons
     }
 
     //    std::cout << jt::MathHelper::length(target.getVelocity()) << std::endl;
-    if (shiftJustPressed) {
+    if (boostJustPressed) {
         if (m_timeSinceShiftJustPressed > 0.2f) {
             m_timeSinceShiftJustPressed = 0.0f;
             auto dir = jt::MathHelper::rotateBy(jt::Vector2f { 1.0f, 0.0f }, -rotationAngle);
