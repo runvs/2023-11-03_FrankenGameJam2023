@@ -48,7 +48,9 @@ public:
     static float HarborInteractionTimerMax();
 
     static inline constexpr auto playerForwardStrength = 100.0f;
-    static inline constexpr auto playerRotationStrength = 150.0f;
+    static inline constexpr auto playerRotationStrengthAtMinSpeed = 175.0f;
+    static inline constexpr auto playerRotationStrengthAtMaxSpeed = 100.0f;
+    static inline constexpr auto playerRotationStrengthAtBoost = 75.0f;
     static inline constexpr auto playerBreakMultiplier = 0.99f;
     static inline constexpr auto playerBoostFactor = 1.5f;
     static inline constexpr auto monkeyForwardStrength = 80.0f;

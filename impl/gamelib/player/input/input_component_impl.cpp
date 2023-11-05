@@ -1,6 +1,7 @@
 #include "input_component_impl.hpp"
 #include "math_helper.hpp"
 #include <game_properties.hpp>
+#include "lerp.hpp"
 
 #include <iostream>
 
@@ -30,14 +31,28 @@ void InputComponentImpl::updateMovement(InputTargetInterface& target, float cons
     }
     m_boostNitro = jt::MathHelper::clamp(m_boostNitro, 0.0f, 1.0f);
 
+    float rotationSpeed;
+    if (boost) {
+        rotationSpeed = GP::playerRotationStrengthAtBoost;
+    } else {
+        const auto velocity = jt::MathHelper::length(target.getVelocity());
+        if (velocity < GP::playerMaxVelocity) {
+            const auto t = velocity / GP::playerMaxVelocity;
+            rotationSpeed = jt::Lerp::linear(GP::playerRotationStrengthAtMinSpeed, GP::playerRotationStrengthAtMaxSpeed, t);
+        } else {
+            const auto t = (velocity - GP::playerMaxVelocity) / (GP::playerMaxVelocityWhenBoosting - GP::playerMaxVelocity);
+            rotationSpeed = jt::Lerp::linear(GP::playerRotationStrengthAtMaxSpeed, GP::playerRotationStrengthAtBoost, t);
+        }
+    }
+
     if (m_keyboard->pressed(jt::KeyCode::A) || m_keyboard->pressed(jt::KeyCode::Left)) {
-        rotationAngle += GP::playerRotationStrength * elapsed;
+        rotationAngle += rotationSpeed * elapsed;
         if (rotationAngle > 360) {
             rotationAngle -= 360;
         }
     }
     if (m_keyboard->pressed(jt::KeyCode::D) || m_keyboard->pressed(jt::KeyCode::Right)) {
-        rotationAngle -= GP::playerRotationStrength * elapsed;
+        rotationAngle -= rotationSpeed * elapsed;
         if (rotationAngle < 0) {
             rotationAngle += 360;
         }
