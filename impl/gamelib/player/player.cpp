@@ -85,7 +85,10 @@ void Player::clampPositionOnMap(jt::Vector2f const& mapSize)
 {
     auto pos = m_b2Object->getPosition();
     pos = jt::MathHelper::clamp(pos, { 0.0f, 0.0f }, mapSize);
+    
     m_b2Object->setPosition(pos);
 }
 
 void Player::getDamage() { m_graphics->flash(0.5f, jt::colors::Red); }
+
+void Player::setPosition(jt::Vector2f const& pos) { m_b2Object->setPosition(pos); }

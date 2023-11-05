@@ -21,6 +21,10 @@ void jt::Waves::doCreate()
         auto const selectedAnimation
             = *jt::SystemHelper::select_randomly(animationNames.cbegin(), animationNames.cend());
         a->play(selectedAnimation);
+        a->update(0.0f);
+        auto const numerOfFrames = a->getNumberOfFramesInCurrentAnimation();
+        //        a->setAnimationSpeedFactor(jt::Random::getFloat(0.8, 1.2f));
+        a->play(selectedAnimation, jt::Random::getInt(0, numerOfFrames - 1), true);
 
         auto const p = jt::Random::getRandomPointIn(m_size);
         bool inExcluded { false };

@@ -47,11 +47,11 @@ public:
     static int TileSizeInPixel();
     static float HarborInteractionTimerMax();
 
-    static inline constexpr float playerForwardStrength = 150.0f;
-    static inline constexpr float playerRotationStrength = 100.0f;
+    static inline constexpr float playerForwardStrength = 100.0f;
+    static inline constexpr float playerRotationStrength = 150.0f;
     static inline constexpr float playerBreakMultiplier = 0.99f;
     static inline constexpr float playerBoostFactor = 1.5f;
-    static inline constexpr float monkeyForwardStrength = 100.0f;
+    static inline constexpr float monkeyForwardStrength = 80.0f;
     static inline constexpr float monkeyChaseDistance = 125.0f;
     static inline constexpr float monkeyRotationSpeed = 100.0f;
     static inline constexpr float cameraDragDistance = 64.0f;
