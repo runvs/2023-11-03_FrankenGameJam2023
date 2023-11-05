@@ -91,12 +91,14 @@ void Monkey::doCreate()
 
 void Monkey::doUpdate(float const elapsed)
 {
-    m_ai->update(*m_b2Object, elapsed, m_randomSpeedMultiplier);
+    if (canAttack())  {
+        m_ai->update(*m_b2Object, elapsed, m_randomSpeedMultiplier);
+    }
     m_graphics->setPosition(m_b2Object->getPosition());
     m_graphics->setAnimationIfNotSet(selectAnimation(
         m_ai->getRotationAngle(),
         jt::MathHelper::length(m_b2Object->getVelocity()),
-        m_ai->getState()));
+        canAttack() ? m_ai->getState() : MonkeyState::Hit));
     m_graphics->updateGraphics(elapsed);
 
     m_attackTimer -= elapsed;
