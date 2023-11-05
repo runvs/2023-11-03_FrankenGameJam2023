@@ -1,11 +1,12 @@
 #ifndef JAMTEMPLATE_MONKEY_H
 #define JAMTEMPLATE_MONKEY_H
 
-#include "box2dwrapper/box2d_object.hpp"
-#include "box2dwrapper/box2d_world_interface.hpp"
-#include "game_object.hpp"
-#include "player/graphics/graphics_component_interface.hpp"
-#include "monkey/ai/ai_component_interface.h"
+#include <box2dwrapper/box2d_object.hpp>
+#include <box2dwrapper/box2d_world_interface.hpp>
+#include <game_object.hpp>
+#include <player/graphics/graphics_component_interface.hpp>
+#include <screeneffects/trailing_waves.hpp>
+#include <monkey/ai/ai_component_interface.h>
 
 class Monkey : public jt::GameObject {
 public:
@@ -27,6 +28,8 @@ private:
     std::unique_ptr<AiComponentInterface> m_ai { nullptr };
 
     std::unique_ptr<jt::Box2DObject> m_b2Object { nullptr };
+
+    std::shared_ptr<jt::TrailingWaves> m_trailingWaves { nullptr };
 
     float m_attackTimer { 0.0f };
 

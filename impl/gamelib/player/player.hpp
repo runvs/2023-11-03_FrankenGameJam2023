@@ -7,6 +7,7 @@
 #include <player/cargo_component.hpp>
 #include <player/graphics/graphics_component_interface.hpp>
 #include <player/input/input_component_interface.hpp>
+#include <screeneffects/trailing_waves.hpp>
 
 class StateGame;
 
@@ -32,6 +33,8 @@ private:
     std::unique_ptr<jt::Box2DObject> m_b2Object { nullptr };
 
     std::shared_ptr<jt::Bar> m_NitroBar { nullptr };
+
+    std::shared_ptr<jt::TrailingWaves> m_trailingWaves { nullptr };
 
     CargoComponent m_cargo;
 

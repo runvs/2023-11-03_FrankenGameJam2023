@@ -54,6 +54,11 @@ void Player::doCreate()
 
     m_NitroBar = std::make_shared<jt::Bar>(4, 16, false, textureManager());
     m_NitroBar->setMaxValue(1.0f);
+
+    m_trailingWaves = std::make_shared<jt::TrailingWaves>();
+    m_trailingWaves->setGameInstance(getGame());
+    m_trailingWaves->create();
+    m_trailingWaves->setMaxAlpha(160u);
 }
 
 void Player::doUpdate(float const elapsed)
@@ -67,10 +72,22 @@ void Player::doUpdate(float const elapsed)
         m_graphics->getDrawable()->getPosition() + jt::Vector2f { 16.0f, 0.0f });
     m_NitroBar->setCurrentValue(m_input->getBoostNitro());
     m_NitroBar->update(elapsed);
+
+    // TODO place behind player
+    m_trailingWaves->update(elapsed);
+    m_trailingWaves->setPosition(getPosition());
+    if (jt::MathHelper::lengthSquared(getVelocity()) > 70.0f * 70.0f) {
+        m_trailingWaves->setTimerMax(0.05f);
+    } else if (jt::MathHelper::lengthSquared(getVelocity()) > 25.0f) {
+        m_trailingWaves->setTimerMax(0.2f);
+    } else {
+        m_trailingWaves->setTimerMax(-1.0f);
+    }
 }
 
 void Player::doDraw() const
 {
+    m_trailingWaves->draw();
     m_graphics->draw(renderTarget());
     m_NitroBar->draw(renderTarget());
 }

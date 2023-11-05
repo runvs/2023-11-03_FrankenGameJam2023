@@ -17,7 +17,9 @@ void jt::TrailingWaves::doCreate()
         },
         [this](auto& a, auto pos) {
             jt::Color startColor { 255u, 255u, 255u,
-                static_cast<std::uint8_t>(jt::Random::getInt(140, 170)) };
+                static_cast<std::uint8_t>(jt::MathHelper::clamp(
+                    static_cast<std::uint8_t>(jt::Random::getFloat(0.7f, 1.3f) * m_maxAlpha),
+                    std::uint8_t { 0u }, { 255u })) };
             a->setColor(startColor);
             a->setPosition(pos);
             a->update(0.0f);
@@ -51,3 +53,5 @@ void jt::TrailingWaves::doDraw() const { m_particles->draw(); }
 void jt::TrailingWaves::setPosition(jt::Vector2f const& pos) { m_pos = pos; }
 
 void jt::TrailingWaves::setTimerMax(float max) { m_timerMax = max; }
+
+void jt::TrailingWaves::setMaxAlpha(std::uint8_t maxAlpha) { m_maxAlpha = maxAlpha; }

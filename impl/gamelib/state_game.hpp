@@ -45,7 +45,6 @@ private:
     std::vector<jt::Rectf> m_tileCollisionRects {};
 
     std::shared_ptr<jt::Waves> m_waves {};
-    std::shared_ptr<jt::TrailingWaves> m_trailingWaves {};
 
     std::shared_ptr<jt::SoundInterface> m_soundFruitPickup;
     std::shared_ptr<jt::SoundInterface> m_soundFruitDeliver;

@@ -14,6 +14,7 @@ class TrailingWaves : public jt::GameObject {
 public:
     void setPosition(jt::Vector2f const& pos);
     void setTimerMax(float max);
+    void setMaxAlpha(std::uint8_t maxAlpha);
 
 private:
     void doCreate() override;
@@ -26,6 +27,7 @@ private:
     jt::Vector2f m_pos;
     float m_timer { 0.0f };
     float m_timerMax { 0.2 };
+    std::uint8_t m_maxAlpha { 255u };
 };
 } // namespace jt
 
