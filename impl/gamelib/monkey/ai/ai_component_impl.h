@@ -5,7 +5,8 @@
 
 class AiComponentImpl : public AiComponentInterface {
 public:
-    void update(AiTargetInterface& target, float const elapsed) override;
+    void update(
+        AiTargetInterface& target, float const elapsed, float const randomSpeedMultiplier) override;
     float getRotationAngle() override;
     void updatePlayerPosition(const jt::Vector2f pos) override;
 

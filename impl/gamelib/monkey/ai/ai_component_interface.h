@@ -8,7 +8,9 @@ class AiComponentInterface {
 public:
     virtual ~AiComponentInterface() = default;
 
-    virtual void update(AiTargetInterface& target, float const elapsed) = 0;
+    virtual void update(
+        AiTargetInterface& target, float const elapsed, float const randomSpeedMultiplier)
+        = 0;
     virtual float getRotationAngle() = 0;
     virtual void updatePlayerPosition(jt::Vector2f const pos) = 0;
 };
