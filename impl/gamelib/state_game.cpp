@@ -31,8 +31,8 @@ void StateGame::onCreate()
         m_tileCollisionRects, 100);
     add(m_waves);
 
-    createPlayer();
     createHarbors(loader);
+    createPlayer();
     spawnMonkey();
 
     m_vignette = std::make_shared<jt::Vignette>(GP::GetScreenSize());
@@ -54,6 +54,10 @@ void StateGame::onEnter() { }
 void StateGame::createPlayer()
 {
     m_player = std::make_shared<Player>(m_world);
+
+    // TODO spawn at correct harbor
+    m_player->setPosition(m_harbors->at(0).lock()->getPosition());
+
     add(m_player);
 }
 
@@ -193,7 +197,7 @@ void StateGame::updateMonkeys()
     auto const playerPos = m_player->getPosition();
     for (auto const& m : *m_monkeys) {
         auto monkey = m.lock();
-        
+
         monkey->updatePlayerPosition(playerPos);
         monkey->clampPositionOnMap(m_tilemap->getMapSizeInPixel());
 
@@ -204,6 +208,8 @@ void StateGame::updateMonkeys()
                 m_soundMonkeyHitsEnemy->play();
                 m_player->getDamage();
                 monkey->attack();
+                // TODO visual effect
+                m_player->getCargo().removeFruit("");
             }
         }
     }

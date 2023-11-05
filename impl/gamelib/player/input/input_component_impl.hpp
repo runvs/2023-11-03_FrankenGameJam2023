@@ -19,7 +19,8 @@ private:
     float rotationAngle { 90.0f };
 
     float m_boostNitro { 1.0f };
-    bool m_boostInRefill { false };
+    float m_timeSinceShiftPressed { 0.0f };
+    float m_timeSinceShiftJustPressed { 0.0f };
 };
 
 #endif // GAME_PLAYER_INPUT_COMPONENT_HPP
