@@ -2,9 +2,11 @@
 #include "game_properties.hpp"
 #include "lerp.hpp"
 #include "math_helper.hpp"
+#include "random/random.hpp"
 
 AiComponentImpl::AiComponentImpl(std::shared_ptr<jt::SoundInterface> sound) {
     m_soundScreams = sound;
+    rotationAngle = jt::Random::getFloat(0, 359);
 }
 
 float AiComponentImpl::getRotationAngle() { return rotationAngle; }
