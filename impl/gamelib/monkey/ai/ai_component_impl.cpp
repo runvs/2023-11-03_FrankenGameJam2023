@@ -5,7 +5,8 @@
 
 float AiComponentImpl::getRotationAngle() { return rotationAngle; }
 
-void AiComponentImpl::update(AiTargetInterface& target, float const elapsed)
+void AiComponentImpl::update(
+    AiTargetInterface& target, float const elapsed, float const randomSpeedMultiplier)
 {
     auto const diff = playerPos - target.getPosition();
     auto const distanceToPlayer = jt::MathHelper::distanceBetween(playerPos, target.getPosition());
@@ -22,7 +23,7 @@ void AiComponentImpl::update(AiTargetInterface& target, float const elapsed)
     };
 
     auto const force
-        = jt::MathHelper::rotateBy(jt::Vector2f { GP::monkeyForwardStrength, 0.0f }, -rotationAngle);
+        = jt::MathHelper::rotateBy(jt::Vector2f { GP::monkeyForwardStrength * randomSpeedMultiplier, 0.0f }, -rotationAngle);
     target.addForceToCenter(force);
 }
 

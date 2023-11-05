@@ -2,6 +2,7 @@
 #include <math_helper.hpp>
 #include <player/graphics/graphics_component_impl.hpp>
 #include <monkey/ai/ai_component_impl.h>
+#include "random/random.hpp"
 
 namespace {
 std::string selectWalkAnimation(float const a)
@@ -44,6 +45,7 @@ Monkey::Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f cons
     def.angularDamping = 1.0;
     m_b2Object = std::make_unique<jt::Box2DObject>(world, &def);
     m_b2Object->setPosition(position);
+    m_randomSpeedMultiplier = jt::Random::getFloat(0.95f, 1.05f);
 }
 
 jt::Vector2f Monkey::getPosition() const { return m_b2Object->getPosition(); }
@@ -64,7 +66,7 @@ void Monkey::doCreate()
 
 void Monkey::doUpdate(float const elapsed)
 {
-    m_ai->update(*m_b2Object, elapsed);
+    m_ai->update(*m_b2Object, elapsed, m_randomSpeedMultiplier);
     m_graphics->setPosition(m_b2Object->getPosition());
     m_graphics->setAnimationIfNotSet(selectWalkAnimation(m_ai->getRotationAngle()));
     m_graphics->updateGraphics(elapsed);

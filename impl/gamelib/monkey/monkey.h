@@ -29,6 +29,7 @@ private:
     std::unique_ptr<jt::Box2DObject> m_b2Object { nullptr };
 
     float m_attackTimer { 0.0f };
+    float m_randomSpeedMultiplier { 1.0f };
 
     virtual void doCreate();
     virtual void doUpdate(float const elapsed);
