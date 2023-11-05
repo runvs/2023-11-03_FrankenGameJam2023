@@ -23,6 +23,7 @@ public:
     void attack();
 
     void clampPositionOnMap(jt::Vector2f const& mapSize);
+    void setAggroRange(float const aggroRange);
 
 private:
     std::unique_ptr<GraphicsComponentInterface> m_graphics { nullptr };
