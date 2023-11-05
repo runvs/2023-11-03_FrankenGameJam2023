@@ -171,7 +171,7 @@ void StateGame::updateHarbors(float const /*elapsed*/)
         auto harbor = h.lock();
         auto const harborPos = harbor->getPosition();
         auto const l = jt::MathHelper::distanceBetweenSquared(harborPos, playerPos);
-        if (l < GP::TileSizeInPixel() * GP::TileSizeInPixel()) {
+        if (l < GP::TileSizeInPixel() * GP::TileSizeInPixel() * 4) {
             //            m_player->getGraphics().getDrawable()->flash(0.1f, jt::colors::Yellow);
             if (harbor->isOffering()) {
                 if (harbor->canBeInteractedWith()) {

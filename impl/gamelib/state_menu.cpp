@@ -50,8 +50,9 @@ void StateMenu::createVignette()
 
 void StateMenu::createShapes()
 {
-    m_background
-        = jt::dh::createShapeRect(GP::GetScreenSize(), GP::PaletteBackground(), textureManager());
+    m_background = jt::dh::createShapeRect(
+        GP::GetScreenSize(), jt::Color { 97, 162, 255, 255 }, textureManager());
+    m_title = std::make_shared<jt::Sprite>("assets/title.png", textureManager());
     m_overlay = jt::dh::createShapeRect(GP::GetScreenSize(), jt::colors::Black, textureManager());
 }
 
@@ -65,23 +66,23 @@ void StateMenu::createMenuText()
 
 void StateMenu::createTextExplanation()
 {
-    m_textExplanation
-        = jt::dh::createText(renderTarget(), GP::ExplanationText(), 16u, GP::PaletteFontFront());
+    m_textExplanation = jt::dh::createText(
+        renderTarget(), GP::ExplanationText(), 16u, jt::Color { 146, 65, 243, 255 });
     auto const half_width = GP::GetScreenSize().x / 2.0f;
     m_textExplanation->setPosition({ half_width, 100 });
-    m_textExplanation->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 2, 2 });
+    m_textExplanation->setShadow(jt::Color { 97, 16, 162 }, jt::Vector2f { 1, 1 });
 }
 
 void StateMenu::createTextCredits()
 {
     m_textCredits = jt::dh::createText(renderTarget(),
         "Created by " + GP::AuthorName() + " for " + GP::JamName() + "\nF9 for License Information",
-        14u, GP::PaletteFontCredits());
+        14u, jt::Color { 146, 65, 243, 255 });
     m_textCredits->setTextAlign(jt::Text::TextAlign::LEFT);
     m_textCredits->setPosition({ 10, GP::GetScreenSize().y - 70 });
-    m_textCredits->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 1, 1 });
+    m_textCredits->setShadow(jt::Color { 97, 16, 162 }, jt::Vector2f { 1, 1 });
 
-    m_textVersion = jt::dh::createText(renderTarget(), "", 14u, GP::PaletteFontCredits());
+    m_textVersion = jt::dh::createText(renderTarget(), "", 14u, jt::Color { 146, 65, 243, 255 });
     if (jt::BuildInfo::gitTagName() != "") {
         m_textVersion->setText(jt::BuildInfo::gitTagName());
     } else {
@@ -90,7 +91,7 @@ void StateMenu::createTextCredits()
     }
     m_textVersion->setTextAlign(jt::Text::TextAlign::RIGHT);
     m_textVersion->setPosition({ GP::GetScreenSize().x - 5.0f, GP::GetScreenSize().y - 20.0f });
-    m_textVersion->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 1, 1 });
+    m_textVersion->setShadow(jt::Color { 97, 16, 162 }, jt::Vector2f { 1, 1 });
 }
 
 void StateMenu::createTextStart()
@@ -98,16 +99,17 @@ void StateMenu::createTextStart()
     auto const half_width = GP::GetScreenSize().x / 2.0f;
     m_textStart = jt::dh::createText(
         renderTarget(), "Press Space to start the game", 16u, GP::PaletteFontFront());
-    m_textStart->setPosition({ half_width, 70 });
-    m_textStart->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 2, 2 });
+    m_textStart->setPosition({ half_width, 77 });
+    m_textStart->setShadow(jt::Color { 97, 16, 162 }, jt::Vector2f { 2, 2 });
 }
 
 void StateMenu::createTextTitle()
 {
     float half_width = GP::GetScreenSize().x / 2;
-    m_textTitle = jt::dh::createText(renderTarget(), GP::GameName(), 32u, GP::PaletteFontFront());
+    m_textTitle
+        = jt::dh::createText(renderTarget(), GP::GameName(), 32u, jt::Color { 146, 65, 243, 255 });
     m_textTitle->setPosition({ half_width, -5 });
-    m_textTitle->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 3, 3 });
+    m_textTitle->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 1, 1 });
 }
 
 void StateMenu::createTweens()
@@ -198,6 +200,7 @@ void StateMenu::onUpdate(float const elapsed)
 void StateMenu::updateDrawables(float const& elapsed)
 {
     m_background->update(elapsed);
+    m_title->update(elapsed);
     m_textTitle->update(elapsed);
     m_textStart->update(elapsed);
     m_textExplanation->update(elapsed);
@@ -230,7 +233,8 @@ void StateMenu::onDraw() const
 {
     m_background->draw(renderTarget());
 
-    m_textTitle->draw(renderTarget());
+    m_title->draw(renderTarget());
+    //    m_textTitle->draw(renderTarget());
     m_textStart->draw(renderTarget());
     m_textExplanation->draw(renderTarget());
     m_textCredits->draw(renderTarget());
