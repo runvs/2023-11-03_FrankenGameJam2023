@@ -1,11 +1,7 @@
 #include "cargo_component.hpp"
 #include <iostream>
 
-void CargoComponent::addFruit(std::string const& fruit)
-{
-    m_fruits += 1;
-    std::cout << "add fruit " << m_fruits << std::endl;
-}
+void CargoComponent::addFruit(std::string const& fruit) { m_fruits += 1; }
 
 void CargoComponent::removeFruit(std::string const& fruit)
 {

@@ -56,6 +56,7 @@ private:
     bool m_running { true };
     bool m_hasEnded { false };
 
+    int m_points { 0 };
     jt::Vector2f m_lastFrameCameraOffset = jt::Vector2f { 0.0f, 0.0f };
 
     void onCreate() override;

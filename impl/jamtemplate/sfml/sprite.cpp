@@ -93,7 +93,9 @@ void jt::Sprite::doDrawOutline(std::shared_ptr<jt::RenderTargetLayer> const sptr
     jt::Vector2f const oldPos = fromLib(m_sprite.getPosition());
     jt::Color const oldCol = fromLib(m_sprite.getColor());
 
-    m_sprite.setColor(toLib(getOutlineColor()));
+    auto col = getOutlineColor();
+    col.a = oldCol.a;
+    m_sprite.setColor(toLib(col));
 
     for (auto const outlineOffset : getOutlineOffsets()) {
         m_sprite.setPosition(toLib(jt::MathHelper::castToInteger(oldPos + outlineOffset)));

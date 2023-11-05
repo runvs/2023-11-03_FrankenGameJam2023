@@ -172,10 +172,13 @@ void StateGame::updateHarbors(float const /*elapsed*/)
         auto const harborPos = harbor->getPosition();
         auto const l = jt::MathHelper::distanceBetweenSquared(harborPos, playerPos);
         if (l < GP::TileSizeInPixel() * GP::TileSizeInPixel()) {
-            m_player->getGraphics().getDrawable()->flash(0.1f, jt::colors::Yellow);
+            //            m_player->getGraphics().getDrawable()->flash(0.1f, jt::colors::Yellow);
             if (harbor->isOffering()) {
                 if (harbor->canBeInteractedWith()) {
-                    m_player->getCargo().addFruit(harbor->getFruitOffering());
+                    auto const harborFruits = harbor->getNumberOfFruitsToPickup();
+                    for (auto i = 0; i != harborFruits; ++i) {
+                        m_player->getCargo().addFruit("");
+                    }
                     harbor->pickUpFruit();
                     spawnMonkey();
                     m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
@@ -186,10 +189,16 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                     if (harbor->canBeInteractedWith()) {
                         // TODO check if special fruit requested
                         m_player->getCargo().removeFruit("");
+
                         m_hud->getObserverScoreP1()->notify(
                             m_player->getCargo().getNumberOfFruits());
+
+                        m_points += 1;
+                        m_hud->getObserverScoreP2()->notify(m_points);
+
                         harbor->deliverFruit();
                         m_soundFruitDeliver->play();
+                        m_player->getGraphics().flash(1.5f, jt::colors::White);
                     }
                 }
             }
