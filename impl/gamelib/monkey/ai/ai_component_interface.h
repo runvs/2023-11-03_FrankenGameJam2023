@@ -15,6 +15,7 @@ public:
     virtual float getRotationAngle() = 0;
     virtual MonkeyState getState() = 0;
     virtual void updatePlayerPosition(jt::Vector2f const pos) = 0;
+    virtual void setAggroRange(float const range) = 0;
 };
 
 #endif // JAMTEMPLATE_AI_COMPONENT_INTERFACE_H

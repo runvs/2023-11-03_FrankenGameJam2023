@@ -32,10 +32,27 @@ void StateMenu::onCreate()
         GP::GetScreenSize(), textureManager()));
 
     oalpp::effects::utility::Gain gain { 1.0f };
-    auto bgm = getGame()->audio().addPermanentSound(
-        "bgm", "assets/sfx/theme-main-start.ogg", "assets/sfx/theme-main-loop.ogg", gain);
-    bgm->setVolumeGroup("music");
-    bgm->play();
+    auto bgma = getGame()->audio().getPermanentSound("bgma");
+    if (!bgma) {
+        bgma = getGame()->audio().addPermanentSound(
+            "bgma", "assets/sfx/theme-main-start.ogg", "assets/sfx/theme-main-loop.ogg", gain);
+        bgma->setVolumeGroup("music");
+        bgma->play();
+    }
+
+    auto bgmb = getGame()->audio().getPermanentSound("bgmb");
+    if (!bgmb) {
+        bgmb = getGame()->audio().addPermanentSound(
+            "bgmb", "assets/sfx/theme-main-start.ogg", "assets/sfx/theme-main-loop.ogg", gain);
+        bgmb->setVolumeGroup("music");
+        bgmb->play();
+    }
+    bgmb->setVolume(0.0f);
+
+    m_vinyl = std::make_shared<jt::Shape>();
+    m_vinyl->makeCircle(16.0f, textureManager());
+    //    m_vinyl->loadFromAseprite("assets/vinyl.ogg", textureManager());
+    m_vinyl->setPosition(jt::Vector2f { 280, 100 });
 }
 
 void StateMenu::onEnter()
@@ -199,6 +216,21 @@ void StateMenu::onUpdate(float const elapsed)
 {
     updateDrawables(elapsed);
     checkForTransitionToStateGame();
+    m_vinyl->update(elapsed);
+
+    if (keyboard()->justPressed(jt::KeyCode::B)) {
+        auto bgma = getGame()->audio().getPermanentSound("bgma");
+        auto bgmb = getGame()->audio().getPermanentSound("bgmb");
+        auto aVolume = bgma ? bgma->getVolume() : 0.0f;
+        auto bVolume = bgmb ? bgmb->getVolume() : 0.0f;
+        if (bgma) {
+            getGame()->audio().fades().volumeFade(bgma, 0.5f, aVolume, bVolume);
+        }
+        if (bgmb) {
+            getGame()->audio().fades().volumeFade(bgmb, 0.5f, bVolume, aVolume);
+        }
+        m_vinyl->flash(0.5f, jt::colors::White);
+    }
 }
 
 void StateMenu::updateDrawables(float const& elapsed)
@@ -238,7 +270,7 @@ void StateMenu::onDraw() const
     m_background->draw(renderTarget());
 
     m_title->draw(renderTarget());
-    //    m_textTitle->draw(renderTarget());
+    m_vinyl->draw(renderTarget());
     m_textStart->draw(renderTarget());
     m_textExplanation->draw(renderTarget());
     m_textCredits->draw(renderTarget());

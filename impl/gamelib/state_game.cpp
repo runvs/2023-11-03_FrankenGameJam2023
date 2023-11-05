@@ -6,6 +6,7 @@
 #include <game_interface.hpp>
 #include <game_properties.hpp>
 #include <hud/hud.hpp>
+#include <lerp.hpp>
 #include <math_helper.hpp>
 #include <screeneffects/vignette.hpp>
 #include <shape.hpp>
@@ -192,6 +193,7 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                     spawnMonkey();
                     m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
                     m_soundFruitPickup->play();
+                    updateMonkeyAggroRange(m_player->getCargo().getNumberOfFruits());
                 }
             } else {
                 if (m_player->getCargo().getNumberOfFruits() > 0) {
@@ -208,6 +210,7 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                         harbor->deliverFruit();
                         m_soundFruitDeliver->play();
                         m_player->getGraphics().flash(1.5f, jt::colors::White);
+                        updateMonkeyAggroRange(m_player->getCargo().getNumberOfFruits());
                     }
                 }
             }
@@ -298,5 +301,15 @@ void StateGame::updatePlayer()
     m_player->clampPositionOnMap(m_tilemap->getMapSizeInPixel() - jt::Vector2f { 16.0f, 16.0f });
     if (m_player->getHealth() <= 0) {
         endGame();
+    }
+}
+
+void StateGame::updateMonkeyAggroRange(int const numberOfFruits)
+{
+    auto const aggroRange = jt::Lerp::linear(GP::monkeyChaseDistanceMin, GP::monkeyChaseDistanceMax,
+        static_cast<float>(numberOfFruits) / GP::monkeyChaseFruitsForMaxDistance);
+    for (auto const& m : *m_monkeys) {
+        auto monkey = m.lock();
+        monkey->setAggroRange(aggroRange);
     }
 }
