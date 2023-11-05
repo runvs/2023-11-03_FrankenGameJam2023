@@ -50,6 +50,8 @@ void StateGame::onCreate()
     m_soundFruitDeliver = getGame()->audio().addTemporarySound("assets/sfx/reward.ogg");
     m_soundMonkeyHitsEnemy
         = getGame()->audio().addTemporarySound("assets/sfx/monkey-hits-boat.ogg");
+    m_soundMonkeyScreams.push_back(getGame()->audio().soundPool("monkey-1", "assets/sfx/fruit-pickup.ogg", 3));
+    m_soundMonkeyScreams.push_back(getGame()->audio().soundPool("monkey-2", "assets/sfx/fruit-pickup.ogg", 3));
 }
 
 void StateGame::onEnter() { }
@@ -92,7 +94,8 @@ void StateGame::spawnMonkey()
         position = jt::Random::getRandomPointIn(m_tilemap->getMapSizeInPixel());
     } while (!isValidMonkeySpawnPosition(position));
 
-    auto const monkey = std::make_shared<Monkey>(m_world, position);
+    auto const soundGroup = getGame()->audio().addTemporarySoundGroup(m_soundMonkeyScreams);
+    auto const monkey = std::make_shared<Monkey>(m_world, position, soundGroup);
     add(monkey);
     m_monkeys->push_back(monkey);
 }

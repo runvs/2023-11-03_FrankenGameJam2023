@@ -1,0 +1,11 @@
+#ifndef FRUITLOVINMONKEYPIRATES_MONKEY_STATE_H
+#define FRUITLOVINMONKEYPIRATES_MONKEY_STATE_H
+
+enum MonkeyState {
+    Idle,
+    Swim,
+    Angry,
+    Hit,
+};
+
+#endif // FRUITLOVINMONKEYPIRATES_MONKEY_STATE_H

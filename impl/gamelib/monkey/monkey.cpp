@@ -1,11 +1,12 @@
 #include "monkey.h"
+#include "random/random.hpp"
 #include <math_helper.hpp>
 #include <player/graphics/graphics_component_impl.hpp>
+#include "monkey_state.h"
 #include <monkey/ai/ai_component_impl.h>
-#include "random/random.hpp"
 
 namespace {
-std::string selectWalkAnimation(float const a)
+std::string selectAnimationDirection(float const a)
 {
     float clampedValue = a;
 
@@ -35,9 +36,27 @@ std::string selectWalkAnimation(float const a)
     }
     return "right";
 }
+
+std::string selectAnimation(float const angle, float velocity, MonkeyState state)
+{
+    auto direction = selectAnimationDirection(angle);
+    switch (state) {
+    case Idle:
+        if (velocity < 5) {
+            return direction;
+        }
+        return direction + "-swim";
+    case Angry:
+        return direction + "-angry";
+    case Swim:
+        return direction + "-swim";
+    case Hit:
+        return direction + "-hit";
+    }
+}
 } // namespace
 
-Monkey::Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f const position)
+Monkey::Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f const position, std::shared_ptr<jt::SoundInterface> sound)
 {
     b2BodyDef def {};
     def.type = b2BodyType::b2_dynamicBody;
@@ -46,6 +65,7 @@ Monkey::Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f cons
     m_b2Object = std::make_unique<jt::Box2DObject>(world, &def);
     m_b2Object->setPosition(position);
     m_randomSpeedMultiplier = jt::Random::getFloat(0.95f, 1.05f);
+    m_soundScreams = sound;
 }
 
 jt::Vector2f Monkey::getPosition() const { return m_b2Object->getPosition(); }
@@ -61,7 +81,7 @@ void Monkey::doCreate()
     m_b2Object->getB2Body()->CreateFixture(&fixtureDef);
 
     m_graphics = std::make_unique<GraphicsComponentImpl>(getGame(), "assets/affe.aseprite");
-    m_ai = std::make_unique<AiComponentImpl>();
+    m_ai = std::make_unique<AiComponentImpl>(m_soundScreams);
 
     m_trailingWaves = std::make_shared<jt::TrailingWaves>();
     m_trailingWaves->setGameInstance(getGame());
@@ -73,7 +93,10 @@ void Monkey::doUpdate(float const elapsed)
 {
     m_ai->update(*m_b2Object, elapsed, m_randomSpeedMultiplier);
     m_graphics->setPosition(m_b2Object->getPosition());
-    m_graphics->setAnimationIfNotSet(selectWalkAnimation(m_ai->getRotationAngle()));
+    m_graphics->setAnimationIfNotSet(selectAnimation(
+        m_ai->getRotationAngle(),
+        jt::MathHelper::length(m_b2Object->getVelocity()),
+        m_ai->getState()));
     m_graphics->updateGraphics(elapsed);
 
     m_attackTimer -= elapsed;

@@ -3,6 +3,7 @@
 
 #include "vector.hpp"
 #include "ai_target_interface.h"
+#include "monkey/monkey_state.h"
 
 class AiComponentInterface {
 public:
@@ -12,6 +13,7 @@ public:
         AiTargetInterface& target, float const elapsed, float const randomSpeedMultiplier)
         = 0;
     virtual float getRotationAngle() = 0;
+    virtual MonkeyState getState() = 0;
     virtual void updatePlayerPosition(jt::Vector2f const pos) = 0;
 };
 

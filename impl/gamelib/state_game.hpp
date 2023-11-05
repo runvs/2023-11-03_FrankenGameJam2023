@@ -52,6 +52,7 @@ private:
     std::shared_ptr<jt::SoundInterface> m_soundFruitPickup;
     std::shared_ptr<jt::SoundInterface> m_soundFruitDeliver;
     std::shared_ptr<jt::SoundInterface> m_soundMonkeyHitsEnemy;
+    std::vector<std::shared_ptr<jt::SoundInterface>> m_soundMonkeyScreams {};
 
     bool m_running { true };
     bool m_hasEnded { false };

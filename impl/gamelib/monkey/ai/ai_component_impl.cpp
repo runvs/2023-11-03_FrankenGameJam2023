@@ -3,6 +3,10 @@
 #include "lerp.hpp"
 #include "math_helper.hpp"
 
+AiComponentImpl::AiComponentImpl(std::shared_ptr<jt::SoundInterface> sound) {
+    m_soundScreams = sound;
+}
+
 float AiComponentImpl::getRotationAngle() { return rotationAngle; }
 
 void AiComponentImpl::update(
@@ -11,6 +15,9 @@ void AiComponentImpl::update(
     auto const diff = playerPos - target.getPosition();
     auto const distanceToPlayer = jt::MathHelper::distanceBetween(playerPos, target.getPosition());
     if (distanceToPlayer > GP::monkeyChaseDistance) {
+        if (m_state == MonkeyState::Angry) {
+            m_state = MonkeyState::Idle;
+        }
         return;
     }
 
@@ -31,6 +38,15 @@ void AiComponentImpl::update(
         }
     };
 
+    if (rotationDistance < 10) {
+        if (m_state != MonkeyState::Angry) {
+            m_state = MonkeyState::Angry;
+            m_soundScreams->play();
+        }
+    } else {
+        m_state = MonkeyState::Swim;
+    }
+
     if (rotationAngle > 180) {
         rotationAngle -= 360;
     } else if (rotationAngle < -180) {
@@ -43,3 +59,5 @@ void AiComponentImpl::update(
 }
 
 void AiComponentImpl::updatePlayerPosition(jt::Vector2f pos) { playerPos = pos; }
+
+MonkeyState AiComponentImpl::getState() { return m_state; }
