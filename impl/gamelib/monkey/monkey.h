@@ -6,7 +6,7 @@
 #include <game_object.hpp>
 #include <player/graphics/graphics_component_interface.hpp>
 #include <screeneffects/trailing_waves.hpp>
-#include <monkey/ai/ai_component_interface.h>
+#include "monkey/ai/ai_component_interface.h"
 
 class Monkey : public jt::GameObject {
 public:

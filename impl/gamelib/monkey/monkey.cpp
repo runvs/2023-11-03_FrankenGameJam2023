@@ -1,11 +1,12 @@
 #include "monkey.h"
+#include "random/random.hpp"
 #include <math_helper.hpp>
 #include <player/graphics/graphics_component_impl.hpp>
+#include "monkey_state.h"
 #include <monkey/ai/ai_component_impl.h>
-#include "random/random.hpp"
 
 namespace {
-std::string selectWalkAnimation(float const a)
+std::string selectAnimationDirection(float const a)
 {
     float clampedValue = a;
 
@@ -34,6 +35,22 @@ std::string selectWalkAnimation(float const a)
         return "down-right";
     }
     return "right";
+}
+
+std::string selectAnimation(float const angle, float velocity, MonkeyState state)
+{
+    auto direction = selectAnimationDirection(angle);
+    switch (state) {
+    case Idle:
+        if (velocity < 5) {
+            return direction;
+        }
+        return direction + "-swim";
+    case Angry:
+        return direction + "-angry";
+    case Hit:
+        return direction + "-hit";
+    }
 }
 } // namespace
 
@@ -73,7 +90,10 @@ void Monkey::doUpdate(float const elapsed)
 {
     m_ai->update(*m_b2Object, elapsed, m_randomSpeedMultiplier);
     m_graphics->setPosition(m_b2Object->getPosition());
-    m_graphics->setAnimationIfNotSet(selectWalkAnimation(m_ai->getRotationAngle()));
+    m_graphics->setAnimationIfNotSet(selectAnimation(
+        m_ai->getRotationAngle(),
+        jt::MathHelper::length(m_b2Object->getVelocity()),
+        m_ai->getState()));
     m_graphics->updateGraphics(elapsed);
 
     m_attackTimer -= elapsed;
