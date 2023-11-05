@@ -26,6 +26,8 @@ public:
 
     void getDamage();
 
+    int getHealth() const;
+
 private:
     std::unique_ptr<InputComponentInterface> m_input { nullptr };
     std::unique_ptr<GraphicsComponentInterface> m_graphics { nullptr };
@@ -35,6 +37,9 @@ private:
     std::shared_ptr<jt::Bar> m_NitroBar { nullptr };
 
     std::shared_ptr<jt::TrailingWaves> m_trailingWaves { nullptr };
+
+    std::shared_ptr<jt::Animation> m_heartContainer { nullptr };
+    int m_health { 5 };
 
     CargoComponent m_cargo;
 

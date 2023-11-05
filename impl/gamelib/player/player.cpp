@@ -1,5 +1,6 @@
 #include "player.hpp"
 #include <game_interface.hpp>
+#include <game_properties.hpp>
 #include <math_helper.hpp>
 #include <player/graphics/graphics_component_impl.hpp>
 #include <player/input/input_component_impl.hpp>
@@ -59,6 +60,13 @@ void Player::doCreate()
     m_trailingWaves->setGameInstance(getGame());
     m_trailingWaves->create();
     m_trailingWaves->setMaxAlpha(160u);
+
+    m_heartContainer = std::make_shared<jt::Animation>();
+    m_heartContainer->loadFromAseprite("assets/hearts.aseprite", textureManager());
+    m_heartContainer->setZ(GP::ZLayerHUD);
+    m_heartContainer->setPosition({ GP::GetScreenSize().x / 2.0f, 10.0f });
+    m_heartContainer->setIgnoreCamMovement(true);
+    m_heartContainer->play(std::to_string(1));
 }
 
 void Player::doUpdate(float const elapsed)
@@ -83,6 +91,8 @@ void Player::doUpdate(float const elapsed)
     } else {
         m_trailingWaves->setTimerMax(-1.0f);
     }
+
+    m_heartContainer->update(elapsed);
 }
 
 void Player::doDraw() const
@@ -90,6 +100,7 @@ void Player::doDraw() const
     m_trailingWaves->draw();
     m_graphics->draw(renderTarget());
     m_NitroBar->draw(renderTarget());
+    m_heartContainer->draw(renderTarget());
 }
 
 GraphicsComponentInterface& Player::getGraphics() { return *m_graphics; }
@@ -106,6 +117,13 @@ void Player::clampPositionOnMap(jt::Vector2f const& mapSize)
     m_b2Object->setPosition(pos);
 }
 
-void Player::getDamage() { m_graphics->flash(0.5f, jt::colors::Red); }
+void Player::getDamage()
+{
+    m_graphics->flash(0.5f, jt::colors::Red);
+    m_health -= 1;
+    m_heartContainer->play(std::to_string(5 - m_health));
+}
 
 void Player::setPosition(jt::Vector2f const& pos) { m_b2Object->setPosition(pos); }
+
+int Player::getHealth() const { return m_health; }

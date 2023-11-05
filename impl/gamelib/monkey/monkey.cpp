@@ -56,7 +56,8 @@ std::string selectAnimation(float const angle, float velocity, MonkeyState state
 }
 } // namespace
 
-Monkey::Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f const position, std::shared_ptr<jt::SoundInterface> sound)
+Monkey::Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f const position,
+    std::shared_ptr<jt::SoundInterface> sound)
 {
     b2BodyDef def {};
     def.type = b2BodyType::b2_dynamicBody;
@@ -91,14 +92,13 @@ void Monkey::doCreate()
 
 void Monkey::doUpdate(float const elapsed)
 {
-    if (canAttack())  {
+    if (canAttack()) {
         m_ai->update(*m_b2Object, elapsed, m_randomSpeedMultiplier);
     }
     m_graphics->setPosition(m_b2Object->getPosition());
-    m_graphics->setAnimationIfNotSet(selectAnimation(
-        m_ai->getRotationAngle(),
-        jt::MathHelper::length(m_b2Object->getVelocity()),
-        canAttack() ? m_ai->getState() : MonkeyState::Hit));
+    m_graphics->setAnimationIfNotSet(
+        selectAnimation(m_ai->getRotationAngle(), jt::MathHelper::length(m_b2Object->getVelocity()),
+            canAttack() ? m_ai->getState() : MonkeyState::Hit));
     m_graphics->updateGraphics(elapsed);
 
     m_attackTimer -= elapsed;
@@ -132,4 +132,4 @@ void Monkey::updatePlayerPosition(jt::Vector2f const playerPos)
 
 bool Monkey::canAttack() const { return m_attackTimer <= 0; }
 
-void Monkey::attack() { m_attackTimer = 1.0f; }
+void Monkey::attack() { m_attackTimer = 2.0f; }
