@@ -19,6 +19,7 @@
 
 void StateMenu::onCreate()
 {
+    getGame()->gfx().createZLayer(GP::ZLayerBoat);
     createMenuText();
     createShapes();
     createVignette();

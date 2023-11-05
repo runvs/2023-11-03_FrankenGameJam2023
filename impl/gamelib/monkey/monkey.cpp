@@ -62,6 +62,11 @@ void Monkey::doCreate()
 
     m_graphics = std::make_unique<GraphicsComponentImpl>(getGame(), "assets/affe.aseprite");
     m_ai = std::make_unique<AiComponentImpl>();
+
+    m_trailingWaves = std::make_shared<jt::TrailingWaves>();
+    m_trailingWaves->setGameInstance(getGame());
+    m_trailingWaves->create();
+    m_trailingWaves->setMaxAlpha(120u);
 }
 
 void Monkey::doUpdate(float const elapsed)
@@ -72,6 +77,14 @@ void Monkey::doUpdate(float const elapsed)
     m_graphics->updateGraphics(elapsed);
 
     m_attackTimer -= elapsed;
+
+    m_trailingWaves->update(elapsed);
+    m_trailingWaves->setPosition(getPosition());
+    if (jt::MathHelper::lengthSquared(m_b2Object->getVelocity()) > 25.0f) {
+        m_trailingWaves->setTimerMax(0.2f);
+    } else {
+        m_trailingWaves->setTimerMax(-1.0f);
+    }
 }
 
 void Monkey::clampPositionOnMap(jt::Vector2f const& mapSize)
@@ -81,7 +94,11 @@ void Monkey::clampPositionOnMap(jt::Vector2f const& mapSize)
     m_b2Object->setPosition(pos);
 }
 
-void Monkey::doDraw() const { m_graphics->draw(renderTarget()); }
+void Monkey::doDraw() const
+{
+    m_graphics->draw(renderTarget());
+    m_trailingWaves->draw();
+}
 
 void Monkey::updatePlayerPosition(jt::Vector2f const playerPos)
 {

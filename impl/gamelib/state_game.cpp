@@ -138,6 +138,7 @@ void StateGame::onUpdate(float const elapsed)
 void StateGame::onDraw() const
 {
     m_tilemap->draw(renderTarget());
+
     m_overlay->draw(renderTarget());
     drawObjects();
 

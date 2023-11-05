@@ -7,6 +7,7 @@
 #include <harbor/harbor.hpp>
 #include <object_group.hpp>
 #include <player/player.hpp>
+#include <screeneffects/trailing_waves.hpp>
 #include <screeneffects/waves.hpp>
 #include <tilemap/tile_layer.hpp>
 #include "monkey/monkey.h"

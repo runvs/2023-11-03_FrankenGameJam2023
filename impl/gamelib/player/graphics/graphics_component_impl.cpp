@@ -14,6 +14,7 @@ void GraphicsComponentImpl::createAnimation(
     m_animation = std::make_shared<jt::Animation>();
     m_animation->loadFromAseprite(asepriteFileName, textureManager);
     m_animation->play("right");
+    m_animation->setZ(GP::ZLayerBoat);
 }
 
 void GraphicsComponentImpl::updateGraphics(float elapsed) { m_animation->update(elapsed); }
