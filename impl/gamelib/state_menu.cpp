@@ -75,8 +75,7 @@ void StateMenu::createTextExplanation()
 void StateMenu::createTextCredits()
 {
     m_textCredits = jt::dh::createText(renderTarget(),
-        "Created by " + GP::AuthorName() + " for " + GP::JamName() + "\n" + GP::JamDate()
-            + "\nF9 for License Information",
+        "Created by " + GP::AuthorName() + " for " + GP::JamName() + "\nF9 for License Information",
         14u, GP::PaletteFontCredits());
     m_textCredits->setTextAlign(jt::Text::TextAlign::LEFT);
     m_textCredits->setPosition({ 10, GP::GetScreenSize().y - 70 });
@@ -107,7 +106,7 @@ void StateMenu::createTextTitle()
 {
     float half_width = GP::GetScreenSize().x / 2;
     m_textTitle = jt::dh::createText(renderTarget(), GP::GameName(), 32u, GP::PaletteFontFront());
-    m_textTitle->setPosition({ half_width, 10 });
+    m_textTitle->setPosition({ half_width, -5 });
     m_textTitle->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 3, 3 });
 }
 
