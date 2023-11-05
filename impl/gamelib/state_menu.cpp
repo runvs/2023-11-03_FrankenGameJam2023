@@ -54,7 +54,9 @@ void StateMenu::createShapes()
 {
     m_background = jt::dh::createShapeRect(
         GP::GetScreenSize(), jt::Color { 97, 162, 255, 255 }, textureManager());
-    m_title = std::make_shared<jt::Sprite>("assets/title.png", textureManager());
+    m_title = std::make_shared<jt::Animation>();
+    m_title->loadFromAseprite("assets/title.aseprite", textureManager());
+    m_title->play("idle");
     m_overlay = jt::dh::createShapeRect(GP::GetScreenSize(), jt::colors::Black, textureManager());
 }
 

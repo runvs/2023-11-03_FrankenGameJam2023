@@ -34,7 +34,7 @@ void MarioClouds::doCreate()
 void MarioClouds::doUpdate(float const elapsed)
 {
 
-    jt::Vector2f const velocity { 10, 0 };
+    jt::Vector2f const velocity { 5, 0 };
     for (auto& c : m_clouds) {
 
         auto pos = c->getPosition();
