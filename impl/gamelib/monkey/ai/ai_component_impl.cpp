@@ -3,6 +3,10 @@
 #include "lerp.hpp"
 #include "math_helper.hpp"
 
+AiComponentImpl::AiComponentImpl(std::shared_ptr<jt::SoundInterface> sound) {
+    m_soundScreams = sound;
+}
+
 float AiComponentImpl::getRotationAngle() { return rotationAngle; }
 
 void AiComponentImpl::update(
@@ -35,7 +39,10 @@ void AiComponentImpl::update(
     };
 
     if (rotationDistance < 10) {
-        m_state = MonkeyState::Angry;
+        if (m_state != MonkeyState::Angry) {
+            m_state = MonkeyState::Angry;
+            m_soundScreams->play();
+        }
     } else {
         m_state = MonkeyState::Swim;
     }

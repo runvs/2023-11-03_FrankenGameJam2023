@@ -56,7 +56,7 @@ std::string selectAnimation(float const angle, float velocity, MonkeyState state
 }
 } // namespace
 
-Monkey::Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f const position)
+Monkey::Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f const position, std::shared_ptr<jt::SoundInterface> sound)
 {
     b2BodyDef def {};
     def.type = b2BodyType::b2_dynamicBody;
@@ -65,6 +65,7 @@ Monkey::Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f cons
     m_b2Object = std::make_unique<jt::Box2DObject>(world, &def);
     m_b2Object->setPosition(position);
     m_randomSpeedMultiplier = jt::Random::getFloat(0.95f, 1.05f);
+    m_soundScreams = sound;
 }
 
 jt::Vector2f Monkey::getPosition() const { return m_b2Object->getPosition(); }
@@ -80,7 +81,7 @@ void Monkey::doCreate()
     m_b2Object->getB2Body()->CreateFixture(&fixtureDef);
 
     m_graphics = std::make_unique<GraphicsComponentImpl>(getGame(), "assets/affe.aseprite");
-    m_ai = std::make_unique<AiComponentImpl>();
+    m_ai = std::make_unique<AiComponentImpl>(m_soundScreams);
 
     m_trailingWaves = std::make_shared<jt::TrailingWaves>();
     m_trailingWaves->setGameInstance(getGame());
