@@ -21,7 +21,7 @@ public:
 
 private:
     std::shared_ptr<jt::Shape> m_background;
-    std::shared_ptr<jt::Sprite> m_title;
+    std::shared_ptr<jt::Animation> m_title;
 
     std::shared_ptr<jt::Text> m_textTitle;
     std::shared_ptr<jt::Text> m_textStart;
@@ -31,6 +31,13 @@ private:
 
     std::shared_ptr<jt::Shape> m_overlay;
     std::shared_ptr<jt::Vignette> m_vignette;
+
+    std::shared_ptr<jt::Shape> m_vinyl;
+
+    /// 0 = A,
+    /// 1 = B,
+    /// 2 = C
+    int selected { 0 };
 
     int m_score { 0 };
 

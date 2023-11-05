@@ -20,8 +20,8 @@ public:
 
     static std::string ExplanationText()
     {
-        return "Take and give Fruits\n[W,A,S,D] to move \n[Shift] to boost\n[M/U] to mute/unmute "
-               "audio";
+        return "Take and give Fruits\n[W,A,S,D] to move \n[Shift] to boost\n[M/U/B] to "
+               "mute/unmute/switch audio";
     }
 
     static jt::Vector2f GetWindowSize() { return jt::Vector2f { 1280, 960 }; }
@@ -46,7 +46,7 @@ public:
     static int PhysicPositionIterations();
     static jt::Vector2f PlayerSize();
     static int TileSizeInPixel();
-    static float HarborInteractionTimerMax();
+    static float ScreenSizeScrollBound();
 
     static inline constexpr auto playerForwardStrength = 100.0f;
     static inline constexpr auto playerRotationStrengthAtMinSpeed = 175.0f;
@@ -61,7 +61,7 @@ public:
     static inline constexpr auto monkeyRotationSpeed = 100.0f;
     static inline constexpr auto cameraDragDistance = 64.0f;
     static inline constexpr auto cameraSmoothFactor = 0.025f;
-    static float ScreenSizeScrollBound();
+
     static inline constexpr auto playerMaxVelocity = 65.0f;
     static inline constexpr auto playerMaxVelocityWhenBoosting = 140.0f;
 

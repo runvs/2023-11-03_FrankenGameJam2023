@@ -32,10 +32,37 @@ void StateMenu::onCreate()
         GP::GetScreenSize(), textureManager()));
 
     oalpp::effects::utility::Gain gain { 1.0f };
-    auto bgm = getGame()->audio().addPermanentSound(
-        "bgm", "assets/sfx/theme-main-start.ogg", "assets/sfx/theme-main-loop.ogg", gain);
-    bgm->setVolumeGroup("music");
-    bgm->play();
+    auto bgma = getGame()->audio().getPermanentSound("bgma");
+    if (!bgma) {
+        bgma = getGame()->audio().addPermanentSound(
+            "bgma", "assets/sfx/theme-A-start.ogg", "assets/sfx/theme-A-loop.ogg", gain);
+        bgma->setVolumeGroup("music");
+        bgma->setVolume(0.8f);
+        bgma->play();
+    }
+
+    auto bgmb = getGame()->audio().getPermanentSound("bgmb");
+    if (!bgmb) {
+        bgmb = getGame()->audio().addPermanentSound(
+            "bgmb", "assets/sfx/theme-B-start.ogg", "assets/sfx/theme-B-loop.ogg", gain);
+        bgmb->setVolumeGroup("music");
+        bgmb->setVolume(0.8f);
+        bgmb->play();
+    }
+    bgmb->setVolume(0.0f);
+
+    auto bgmc = getGame()->audio().getPermanentSound("bgmc");
+    if (!bgmc) {
+        bgmc = getGame()->audio().addPermanentSound("bgmc", "assets/sfx/theme-C.ogg");
+        bgmc->setVolumeGroup("music");
+        bgmc->play();
+    }
+    bgmc->setVolume(0.0f);
+
+    m_vinyl = std::make_shared<jt::Shape>();
+    m_vinyl->makeCircle(16.0f, textureManager());
+    //    m_vinyl->loadFromAseprite("assets/vinyl.ogg", textureManager());
+    m_vinyl->setPosition(jt::Vector2f { 280, 100 });
 }
 
 void StateMenu::onEnter()
@@ -54,7 +81,9 @@ void StateMenu::createShapes()
 {
     m_background = jt::dh::createShapeRect(
         GP::GetScreenSize(), jt::Color { 97, 162, 255, 255 }, textureManager());
-    m_title = std::make_shared<jt::Sprite>("assets/title.png", textureManager());
+    m_title = std::make_shared<jt::Animation>();
+    m_title->loadFromAseprite("assets/title.aseprite", textureManager());
+    m_title->play("idle");
     m_overlay = jt::dh::createShapeRect(GP::GetScreenSize(), jt::colors::Black, textureManager());
 }
 
@@ -197,6 +226,37 @@ void StateMenu::onUpdate(float const elapsed)
 {
     updateDrawables(elapsed);
     checkForTransitionToStateGame();
+    m_vinyl->update(elapsed);
+
+    if (keyboard()->justPressed(jt::KeyCode::B)) {
+        auto bgma = getGame()->audio().getPermanentSound("bgma");
+        auto bgmb = getGame()->audio().getPermanentSound("bgmb");
+        auto bgmc = getGame()->audio().getPermanentSound("bgmc");
+        auto aVolume = bgma ? bgma->getVolume() : 0.0f;
+        auto bVolume = bgmb ? bgmb->getVolume() : 0.0f;
+        auto cVolume = bgmc ? bgmc->getVolume() : 0.0f;
+
+        selected++;
+        if (selected == 3) {
+            selected = 0;
+        }
+        auto const time = 0.25f;
+        if (selected == 0) {
+            getGame()->audio().fades().volumeFade(bgma, time, aVolume, 1.0f);
+            getGame()->audio().fades().volumeFade(bgmb, time, bVolume, 0.0f);
+            getGame()->audio().fades().volumeFade(bgmc, time, cVolume, 0.0f);
+        } else if (selected == 1) {
+            getGame()->audio().fades().volumeFade(bgma, time, aVolume, 0.0f);
+            getGame()->audio().fades().volumeFade(bgmb, time, bVolume, 1.0f);
+            getGame()->audio().fades().volumeFade(bgmc, time, cVolume, 0.0f);
+        } else {
+            getGame()->audio().fades().volumeFade(bgma, time, aVolume, 0.0f);
+            getGame()->audio().fades().volumeFade(bgmb, time, bVolume, 0.0f);
+            getGame()->audio().fades().volumeFade(bgmc, time, cVolume, 1.0f);
+        }
+
+        m_vinyl->flash(0.5f, jt::colors::White);
+    }
 }
 
 void StateMenu::updateDrawables(float const& elapsed)
@@ -236,7 +296,7 @@ void StateMenu::onDraw() const
     m_background->draw(renderTarget());
 
     m_title->draw(renderTarget());
-    //    m_textTitle->draw(renderTarget());
+    m_vinyl->draw(renderTarget());
     m_textStart->draw(renderTarget());
     m_textExplanation->draw(renderTarget());
     m_textCredits->draw(renderTarget());

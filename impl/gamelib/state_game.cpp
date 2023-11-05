@@ -1,5 +1,4 @@
 ﻿#include "state_game.hpp"
-#include "lerp.hpp"
 #include "random/random.hpp"
 #include "tilemap/tileson_loader.hpp"
 #include <box2dwrapper/box2d_world_impl.hpp>
@@ -7,6 +6,7 @@
 #include <game_interface.hpp>
 #include <game_properties.hpp>
 #include <hud/hud.hpp>
+#include <lerp.hpp>
 #include <math_helper.hpp>
 #include <screeneffects/vignette.hpp>
 #include <shape.hpp>
@@ -54,8 +54,10 @@ void StateGame::onCreate()
     m_soundFruitDeliver = getGame()->audio().addTemporarySound("assets/sfx/reward.ogg");
     m_soundMonkeyHitsEnemy
         = getGame()->audio().addTemporarySound("assets/sfx/monkey-hits-boat.ogg");
-    m_soundMonkeyScreams.push_back(getGame()->audio().soundPool("monkey-1", "assets/sfx/fruit-pickup.ogg", 3));
-    m_soundMonkeyScreams.push_back(getGame()->audio().soundPool("monkey-2", "assets/sfx/fruit-pickup.ogg", 3));
+    m_soundMonkeyScreams.push_back(
+        getGame()->audio().soundPool("monkey-1", "assets/sfx/fruit-pickup.ogg", 3));
+    m_soundMonkeyScreams.push_back(
+        getGame()->audio().soundPool("monkey-2", "assets/sfx/fruit-pickup.ogg", 3));
 }
 
 void StateGame::onEnter() { }
@@ -297,10 +299,15 @@ void StateGame::loadLevelCollisions(jt::tilemap::TilesonLoader& loader)
 void StateGame::updatePlayer()
 {
     m_player->clampPositionOnMap(m_tilemap->getMapSizeInPixel() - jt::Vector2f { 16.0f, 16.0f });
+    if (m_player->getHealth() <= 0) {
+        endGame();
+    }
 }
 
-void StateGame::updateMonkeyAggroRange(const int numberOfFruits) {
-    const auto aggroRange = jt::Lerp::linear(GP::monkeyChaseDistanceMin, GP::monkeyChaseDistanceMax, static_cast<float>(numberOfFruits) / GP::monkeyChaseFruitsForMaxDistance);
+void StateGame::updateMonkeyAggroRange(int const numberOfFruits)
+{
+    auto const aggroRange = jt::Lerp::linear(GP::monkeyChaseDistanceMin, GP::monkeyChaseDistanceMax,
+        static_cast<float>(numberOfFruits) / GP::monkeyChaseFruitsForMaxDistance);
     for (auto const& m : *m_monkeys) {
         auto monkey = m.lock();
         monkey->setAggroRange(aggroRange);
