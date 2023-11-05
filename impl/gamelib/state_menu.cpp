@@ -37,6 +37,7 @@ void StateMenu::onCreate()
         bgma = getGame()->audio().addPermanentSound(
             "bgma", "assets/sfx/theme-A-start.ogg", "assets/sfx/theme-A-loop.ogg", gain);
         bgma->setVolumeGroup("music");
+        bgma->setVolume(0.8f);
         bgma->play();
     }
 
@@ -45,6 +46,7 @@ void StateMenu::onCreate()
         bgmb = getGame()->audio().addPermanentSound(
             "bgmb", "assets/sfx/theme-B-start.ogg", "assets/sfx/theme-B-loop.ogg", gain);
         bgmb->setVolumeGroup("music");
+        bgmb->setVolume(0.8f);
         bgmb->play();
     }
     bgmb->setVolume(0.0f);
