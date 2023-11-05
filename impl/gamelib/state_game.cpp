@@ -1,4 +1,5 @@
 ﻿#include "state_game.hpp"
+#include "lerp.hpp"
 #include "random/random.hpp"
 #include "tilemap/tileson_loader.hpp"
 #include <box2dwrapper/box2d_world_impl.hpp>
@@ -190,6 +191,7 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                     spawnMonkey();
                     m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
                     m_soundFruitPickup->play();
+                    updateMonkeyAggroRange(m_player->getCargo().getNumberOfFruits());
                 }
             } else {
                 if (m_player->getCargo().getNumberOfFruits() > 0) {
@@ -206,6 +208,7 @@ void StateGame::updateHarbors(float const /*elapsed*/)
                         harbor->deliverFruit();
                         m_soundFruitDeliver->play();
                         m_player->getGraphics().flash(1.5f, jt::colors::White);
+                        updateMonkeyAggroRange(m_player->getCargo().getNumberOfFruits());
                     }
                 }
             }
@@ -294,4 +297,12 @@ void StateGame::loadLevelCollisions(jt::tilemap::TilesonLoader& loader)
 void StateGame::updatePlayer()
 {
     m_player->clampPositionOnMap(m_tilemap->getMapSizeInPixel() - jt::Vector2f { 16.0f, 16.0f });
+}
+
+void StateGame::updateMonkeyAggroRange(const int numberOfFruits) {
+    const auto aggroRange = jt::Lerp::linear(GP::monkeyChaseDistanceMin, GP::monkeyChaseDistanceMax, static_cast<float>(numberOfFruits) / GP::monkeyChaseFruitsForMaxDistance);
+    for (auto const& m : *m_monkeys) {
+        auto monkey = m.lock();
+        monkey->setAggroRange(aggroRange);
+    }
 }

@@ -2,9 +2,11 @@
 #include "game_properties.hpp"
 #include "lerp.hpp"
 #include "math_helper.hpp"
+#include "random/random.hpp"
 
 AiComponentImpl::AiComponentImpl(std::shared_ptr<jt::SoundInterface> sound) {
     m_soundScreams = sound;
+    rotationAngle = jt::Random::getFloat(0, 359);
 }
 
 float AiComponentImpl::getRotationAngle() { return rotationAngle; }
@@ -14,7 +16,7 @@ void AiComponentImpl::update(
 {
     auto const diff = playerPos - target.getPosition();
     auto const distanceToPlayer = jt::MathHelper::distanceBetween(playerPos, target.getPosition());
-    if (distanceToPlayer > GP::monkeyChaseDistance) {
+    if (distanceToPlayer > aggroRange) {
         if (m_state == MonkeyState::Angry) {
             m_state = MonkeyState::Idle;
         }
@@ -61,3 +63,5 @@ void AiComponentImpl::update(
 void AiComponentImpl::updatePlayerPosition(jt::Vector2f pos) { playerPos = pos; }
 
 MonkeyState AiComponentImpl::getState() { return m_state; }
+
+void AiComponentImpl::setAggroRange(const float range) { aggroRange = range; }

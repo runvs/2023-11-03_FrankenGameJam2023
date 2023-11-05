@@ -133,3 +133,7 @@ void Monkey::updatePlayerPosition(jt::Vector2f const playerPos)
 bool Monkey::canAttack() const { return m_attackTimer <= 0; }
 
 void Monkey::attack() { m_attackTimer = 1.0f; }
+
+void Monkey::setAggroRange(const float aggroRange) {
+    m_ai->setAggroRange(aggroRange);
+}

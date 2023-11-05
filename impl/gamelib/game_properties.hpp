@@ -55,7 +55,9 @@ public:
     static inline constexpr auto playerBreakMultiplier = 0.99f;
     static inline constexpr auto playerBoostFactor = 1.5f;
     static inline constexpr auto monkeyForwardStrength = 80.0f;
-    static inline constexpr auto monkeyChaseDistance = 125.0f;
+    static inline constexpr auto monkeyChaseDistanceMin = 40.0f;
+    static inline constexpr auto monkeyChaseDistanceMax = 125.0f;
+    static inline constexpr auto monkeyChaseFruitsForMaxDistance = 10;
     static inline constexpr auto monkeyRotationSpeed = 100.0f;
     static inline constexpr auto cameraDragDistance = 64.0f;
     static inline constexpr auto cameraSmoothFactor = 0.025f;

@@ -73,6 +73,7 @@ private:
     bool isValidMonkeySpawnPosition(jt::Vector2f position);
     void updateHarbors(float const elapsed);
     void updateMonkeys();
+    void updateMonkeyAggroRange(int const numberOfFruits);
     void updateCamera(float const elapsed);
     void loadLevelCollisions(jt::tilemap::TilesonLoader& loader);
     void updatePlayer();
