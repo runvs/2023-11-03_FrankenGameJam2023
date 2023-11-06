@@ -14,6 +14,7 @@ class AnimationTestFixture : public ::testing::Test {
 public:
     jt::TextureManagerInterface& tm { getTextureManager() };
     jt::Animation a;
+
     void SetUp() override { tm = getTextureManager(); }
 };
 
@@ -91,7 +92,7 @@ TEST_F(AnimationTestFixture, AddWithWrongSizeFrameTimesRaisesException)
 TEST_F(AnimationTestFixture, GetAllAvailableAnimationsNamesReturnsEmptyVectorByDefault)
 {
     jt::Animation a {};
-    auto const animationNames = a.getAllAvailableAnimationsNames();
+    auto const animationNames = a.getAllAvailableAnimationNames();
     ASSERT_EQ(animationNames.size(), 0u);
 }
 
@@ -113,7 +114,7 @@ TEST_F(AnimationTestFixture, LoadFromJson)
     ASSERT_EQ(a.getGlobalBounds().width, 16);
     ASSERT_EQ(a.getGlobalBounds().height, 16);
 
-    auto const animationNames = a.getAllAvailableAnimationsNames();
+    auto const animationNames = a.getAllAvailableAnimationNames();
     ASSERT_EQ(animationNames.size(), 3u);
 }
 
@@ -123,6 +124,7 @@ class AnimationTestWithAnimation : public ::testing::Test {
 protected:
     jt::TextureManagerInterface& tm { getTextureManager() };
     jt::Animation a;
+
     void SetUp() override { addAnimationWithFrameIndices(); }
 
     void addAnimationWithFrameIndices(std::vector<unsigned int> frameIndices = { 0, 1, 2, 3, 4 })
@@ -155,12 +157,15 @@ TEST_F(AnimationTestWithAnimation, PlayInvalidAnimationWillRaiseInvalidArgument)
     ASSERT_NO_THROW(a.play("test1234_invalid"));
 }
 
-TEST_F(AnimationTestWithAnimation, IsLoopingByDefault) { ASSERT_TRUE(a.getIsLooping()); }
+TEST_F(AnimationTestWithAnimation, IsLoopingByDefault)
+{
+    ASSERT_TRUE(a.getCurrentAnimationIsLooping());
+}
 
 TEST_F(AnimationTestWithAnimation, IsLoopingAfterPlay)
 {
     a.play("idle");
-    ASSERT_TRUE(a.getIsLooping());
+    ASSERT_TRUE(a.getCurrentAnimationIsLooping());
 }
 
 TEST_F(AnimationTestWithAnimation, SetFrameTimes)
@@ -186,15 +191,28 @@ TEST_F(AnimationTestWithAnimation, SetFrameTimesWithInvalidVectorSize)
 
 TEST_F(AnimationTestWithAnimation, IsNotLoopingAfterSetLooping)
 {
+    a.setLooping("idle", false);
+    ASSERT_FALSE(a.getIsLoopingFor());
+}
+
+TEST_F(AnimationTestWithAnimation, IsNotLoopingAfterSetLoopingAll)
+{
+    a.setLoopingAll(false);
+    ASSERT_FALSE(a.getIsLoopingFor("idle"));
+}
+
+TEST_F(AnimationTestWithAnimation, IsNotLoopingCurrentAfterSetLooping)
+{
     a.play("idle");
     a.setLooping("idle", false);
-    ASSERT_FALSE(a.getIsLooping());
+    ASSERT_FALSE(a.getCurrentAnimationIsLooping());
 }
 
 class AnimationPlayingTest : public ::testing::Test {
 protected:
     jt::TextureManagerInterface& tm { getTextureManager() };
     jt::Animation a;
+
     void SetUp() override
     {
         a.add("assets/test/unit/jt_test/coin.png", "idle", { 16, 16 }, { 0, 1, 2, 3, 4 }, 1.0f, tm);
@@ -212,7 +230,15 @@ TEST_F(AnimationPlayingTest, SingleFrameTime)
     ASSERT_FLOAT_EQ(a.getCurrentAnimationSingleFrameTime(), 1.0f);
 }
 
-TEST_F(AnimationPlayingTest, TotalFrameTime) { ASSERT_FLOAT_EQ(a.getCurrentAnimTotalTime(), 5.0f); }
+TEST_F(AnimationPlayingTest, TotalTimeForCurrentAnimation)
+{
+    ASSERT_FLOAT_EQ(a.getCurrentAnimTotalTime(), 5.0f);
+}
+
+TEST_F(AnimationPlayingTest, TotalFrameTimeForSpecificAnimation)
+{
+    ASSERT_FLOAT_EQ(a.getAnimTotalTimeFor("idle"), 5.0f);
+}
 
 TEST_F(AnimationPlayingTest, UpdateSwitchesAnimationIndex) { a.update(10.0f); }
 

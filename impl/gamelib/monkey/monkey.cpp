@@ -125,7 +125,7 @@ void Monkey::doDraw() const
     m_trailingWaves->draw();
 }
 
-void Monkey::updatePlayerPosition(jt::Vector2f const playerPos)
+void Monkey::updatePlayerPosition(jt::Vector2f const& playerPos)
 {
     m_ai->updatePlayerPosition(playerPos);
 }

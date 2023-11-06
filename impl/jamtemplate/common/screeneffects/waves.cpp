@@ -17,14 +17,11 @@ void jt::Waves::doCreate()
     for (int i = 0; i != m_count; ++i) {
         auto a = std::make_shared<jt::Animation>();
         a->loadFromAseprite(m_filename, textureManager());
-        auto const animationNames = a->getAllAvailableAnimationsNames();
-        auto const selectedAnimation
-            = *jt::SystemHelper::select_randomly(animationNames.cbegin(), animationNames.cend());
-        a->play(selectedAnimation);
+        auto selectedAnimationName = a->getRandomAnimationName();
+        a->play(selectedAnimationName);
         a->update(0.0f);
         auto const numerOfFrames = a->getNumberOfFramesInCurrentAnimation();
-        //        a->setAnimationSpeedFactor(jt::Random::getFloat(0.8, 1.2f));
-        a->play(selectedAnimation, jt::Random::getInt(0, numerOfFrames - 1), true);
+        a->play(selectedAnimationName, jt::Random::getInt(0, numerOfFrames - 1), true);
 
         auto const p = jt::Random::getRandomPointIn(m_size);
         bool inExcluded { false };

@@ -5,7 +5,7 @@
 void jt::TrailingWaves::doCreate()
 {
     m_tweens = std::make_shared<jt::TweenCollection>();
-    m_particles = jt::ParticleSystem<jt::Animation, 60>::createPS(
+    m_particles = ParticleSystemType::createPS(
         [this]() {
             auto a = std::make_shared<jt::Animation>();
             a->loadFromAseprite("assets/circles.aseprite", textureManager());
@@ -16,14 +16,14 @@ void jt::TrailingWaves::doCreate()
             return a;
         },
         [this](auto& a, auto pos) {
-            jt::Color startColor { 255u, 255u, 255u,
-                static_cast<std::uint8_t>(jt::MathHelper::clamp(
-                    static_cast<std::uint8_t>(jt::Random::getFloat(0.7f, 1.3f) * m_maxAlpha),
-                    std::uint8_t { 0u }, { 255u })) };
+            auto const alpha = jt::MathHelper::clamp(
+                static_cast<std::uint8_t>(jt::Random::getFloat(0.7f, 1.3f) * m_maxAlpha),
+                std::uint8_t { 0u }, std::uint8_t { 255u });
+            jt::Color startColor { 255u, 255u, 255u, alpha };
             a->setColor(startColor);
             a->setPosition(pos);
-            a->update(0.0f);
             a->play("idle", 0, true);
+            a->update(0.0f);
 
             auto twa = jt::TweenAlpha::create(a,
                 a->getCurrentAnimTotalTime() * jt::Random::getFloat(0.75f, 0.95f), startColor.a,

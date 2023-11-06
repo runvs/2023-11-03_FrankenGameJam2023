@@ -18,9 +18,7 @@ void Harbor::doCreate()
     for (auto i = 0; i != 5; ++i) {
         auto anim = std::make_shared<jt::Animation>();
         anim->loadFromAseprite("assets/fruits.aseprite", textureManager());
-        auto const allAnims = anim->getAllAvailableAnimationsNames();
-        auto animName = *jt::SystemHelper::select_randomly(allAnims.cbegin(), allAnims.cend());
-        anim->play(animName);
+        anim->play(anim->getRandomAnimationName());
         anim->setPosition(getPosition() + jt::Vector2f { -20 + i * 20.0f, -18.0f });
         anim->setOutline(jt::Color { 10, 10, 10, 175 }, 1);
         anim->setShadow(jt::Color { 10, 10, 10, 100 }, { 4, 1 });

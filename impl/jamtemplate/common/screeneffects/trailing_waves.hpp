@@ -21,7 +21,9 @@ private:
     void doUpdate(float const elapsed) override;
     void doDraw() const override;
 
-    std::shared_ptr<jt::ParticleSystem<jt::Animation, 60>> m_particles;
+    using ParticleSystemType = jt::ParticleSystem<jt::Animation, 20>;
+
+    std::shared_ptr<ParticleSystemType> m_particles;
     std::shared_ptr<jt::TweenCollection> m_tweens;
 
     jt::Vector2f m_pos;

@@ -63,9 +63,8 @@ void StateMenu::onCreate()
     m_vinyl = std::make_shared<jt::Animation>();
     m_vinyl->loadFromAseprite("assets/disc.aseprite", textureManager());
     m_vinyl->setScale({ 2.0f, 2.0f });
-    m_vinyl->setLooping("0to1", false);
-    m_vinyl->setLooping("1to2", false);
-    m_vinyl->setLooping("2to0", false);
+    m_vinyl->setLoopingAll(false);
+    m_vinyl->setAnimationSpeedFactor(4.0f);
     m_vinyl->play("2to0", true);
     m_vinyl->setPosition(jt::Vector2f { 280, 100 });
 }

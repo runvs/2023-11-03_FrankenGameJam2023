@@ -12,7 +12,7 @@ public:
 
     static std::string GameName() { return "   FruitLovin\nMonkeyPirates"; }
 
-    static std::string AuthorName() { return "Adkiem, BloodyOrange,\nJacudibu, Laguna"; }
+    static std::string AuthorName() { return "adkiem, bloodyOrange,\njacudibu, laguna"; }
 
     static std::string JamName() { return "FGJ2023"; }
 

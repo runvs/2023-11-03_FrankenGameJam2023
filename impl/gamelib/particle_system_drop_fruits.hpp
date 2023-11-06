@@ -15,7 +15,7 @@ private:
     void doUpdate(float const elapsed) override;
     void doDraw() const override;
 
-    std::shared_ptr<jt::ParticleSystem<jt::Animation, 30>> m_particles {};
+    std::shared_ptr<jt::ParticleSystem<jt::Animation, 12>> m_particles {};
     std::shared_ptr<jt::TweenCollection> m_tweens {};
 };
 

@@ -240,13 +240,17 @@ void StateGame::updateMonkeys()
     auto const playerPos = m_player->getPosition();
     for (auto const& m : *m_monkeys) {
         auto monkey = m.lock();
+        auto const monkeyPos = monkey->getPosition();
+        auto const l = jt::MathHelper::lengthSquared(playerPos - monkeyPos);
+        if (l > 3 * GP::GetScreenSize().x * GP::GetScreenSize().x) {
+            continue;
+        }
 
         monkey->updatePlayerPosition(playerPos);
         monkey->clampPositionOnMap(m_tilemap->getMapSizeInPixel());
 
         if (monkey->canAttack()) {
-            auto const monkeyPos = monkey->getPosition();
-            auto const l = jt::MathHelper::lengthSquared(playerPos - monkeyPos);
+
             if (l <= GP::TileSizeInPixel() * GP::TileSizeInPixel()) {
                 m_soundMonkeyHitsEnemy->play();
                 m_player->getDamage();

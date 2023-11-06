@@ -11,13 +11,14 @@
 
 class Monkey : public jt::GameObject {
 public:
-    Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f const position, std::shared_ptr<jt::SoundInterface> sound);
+    Monkey(std::shared_ptr<jt::Box2DWorldInterface> world, jt::Vector2f const position,
+        std::shared_ptr<jt::SoundInterface> sound);
 
     jt::Vector2f getPosition() const;
 
     GraphicsComponentInterface& getGraphics();
 
-    virtual void updatePlayerPosition(jt::Vector2f const playerPos);
+    virtual void updatePlayerPosition(jt::Vector2f const& playerPos);
 
     bool canAttack() const;
     void attack();

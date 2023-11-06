@@ -9,14 +9,11 @@ void ParticleSystemDropFruits::doCreate()
 {
     m_tweens = std::make_shared<jt::TweenCollection>();
 
-    m_particles = jt::ParticleSystem<jt::Animation, 30>::createPS(
+    m_particles = jt::ParticleSystem<jt::Animation, 12>::createPS(
         [this]() {
             auto a = std::make_shared<jt::Animation>();
             a->loadFromAseprite("assets/fruits.aseprite", textureManager());
-            auto const animationNames = a->getAllAvailableAnimationsNames();
-            auto const animName = *jt::SystemHelper::select_randomly(
-                animationNames.cbegin(), animationNames.cend());
-            a->play(animName);
+            a->play(a->getRandomAnimationName());
 
             a->setOffset(jt::OffsetMode::CENTER);
             a->setPosition(jt::Vector2f { -2000.0f, -2000.0f });

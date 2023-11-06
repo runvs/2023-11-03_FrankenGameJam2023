@@ -68,8 +68,8 @@ void jt::Sprite::doUpdate(float /*elapsed*/)
 {
     auto const screenPosition = jt::MathHelper::castToInteger(
         getPosition() + getShakeOffset() + getOffset() + getCompleteCamOffset());
-    m_sprite.setPosition(screenPosition.x, screenPosition.y);
-    m_flashSprite.setPosition(screenPosition.x, screenPosition.y);
+    m_sprite.setPosition(toLib(screenPosition));
+    m_flashSprite.setPosition(toLib(screenPosition));
     m_flashSprite.setColor(toLib(getFlashColor()));
 }
 

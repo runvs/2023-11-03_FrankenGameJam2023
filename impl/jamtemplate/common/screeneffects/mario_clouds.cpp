@@ -15,10 +15,7 @@ void MarioClouds::doCreate()
     for (auto i = 0; i != 75; ++i) {
         auto anim = std::make_shared<jt::Animation>();
         anim->loadFromAseprite("assets/wolken.aseprite", textureManager());
-        auto const allAnims = anim->getAllAvailableAnimationsNames();
-        auto const animName
-            = *jt::SystemHelper::select_randomly(allAnims.cbegin(), allAnims.cend());
-        anim->play(animName);
+        anim->play(anim->getRandomAnimationName());
         anim->setBlendMode(jt::BlendMode::ADD);
         anim->setColor(jt::Color { 255, 255, 255, 200 });
 
