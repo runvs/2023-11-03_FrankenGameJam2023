@@ -19,7 +19,7 @@ void MarioClouds::doCreate()
         anim->setBlendMode(jt::BlendMode::ADD);
         anim->setColor(jt::Color { 255, 255, 255, 200 });
 
-        anim->setShadow(jt::Color { 10, 10, 10, 30 }, jt::Vector2f { 16, 10 });
+        anim->setShadow(jt::Color { 10, 10, 10, 30 }, jt::Vector2f { 18, 14 });
         anim->setZ(GP::ZLayerClouds);
 
         anim->setPosition(jt::Random::getRandomPointIn(jt::Rectf { -m_margin.x, -m_margin.y,
