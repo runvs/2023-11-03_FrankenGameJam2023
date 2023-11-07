@@ -71,6 +71,12 @@ void Player::doCreate()
 
 void Player::doUpdate(float const elapsed)
 {
+    auto const fruitRatio = ((GP::PlayerMaxFruitInCargo - m_cargo.getNumberOfFruits())
+        / static_cast<float>(GP::PlayerMaxFruitInCargo));
+    auto fruitMaxVelocityFactor = 0.6f + 0.4f * fruitRatio;
+    fruitMaxVelocityFactor = jt::MathHelper::clamp(fruitMaxVelocityFactor, 0.5f, 1.0f);
+
+    m_input->setMaxVelocityFactor(fruitMaxVelocityFactor);
     m_input->updateMovement(*m_b2Object, elapsed);
     m_graphics->setPosition(m_b2Object->getPosition());
     m_graphics->setAnimationIfNotSet(selectWalkAnimation(m_input->getRotationAngle()));

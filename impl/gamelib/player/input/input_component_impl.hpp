@@ -14,6 +14,8 @@ public:
 
     float getBoostNitro() const override;
 
+    void setMaxVelocityFactor(float factor) override;
+
 private:
     std::shared_ptr<jt::KeyboardInterface> m_keyboard { nullptr };
     float rotationAngle { 90.0f };
@@ -21,6 +23,8 @@ private:
     float m_boostNitro { 1.0f };
     float m_timeSinceShiftPressed { 0.0f };
     float m_timeSinceShiftJustPressed { 0.0f };
+
+    float m_maxVelocityFactor { 1.0f };
 };
 
 #endif // GAME_PLAYER_INPUT_COMPONENT_HPP

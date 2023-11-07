@@ -18,7 +18,8 @@ void Hud::doCreate()
 
     m_scoreP1Text->setPosition({ 10, 4 });
 
-    m_scoreP1Display = std::make_shared<ScoreDisplay>(m_scoreP1Text, "In Cargo: ");
+    m_scoreP1Display = std::make_shared<ScoreDisplay>(
+        m_scoreP1Text, "In Cargo: ", "/" + std::to_string(GP::PlayerMaxFruitInCargo));
 
     m_scoreP2Text = jt::dh::createText(renderTarget(), "", 16, jt::Color { 248, 249, 254 });
     m_scoreP2Text->setTextAlign(jt::Text::TextAlign::RIGHT);

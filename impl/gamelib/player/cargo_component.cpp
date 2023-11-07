@@ -1,7 +1,13 @@
 #include "cargo_component.hpp"
-#include <iostream>
+#include <game_properties.hpp>
 
-void CargoComponent::addFruit(std::string const& fruit) { m_fruits += 1; }
+void CargoComponent::addFruit(std::string const& fruit)
+{
+    m_fruits += 1;
+    if (m_fruits > GP::PlayerMaxFruitInCargo) {
+        m_fruits = GP::PlayerMaxFruitInCargo;
+    }
+}
 
 void CargoComponent::removeFruit(std::string const& fruit)
 {

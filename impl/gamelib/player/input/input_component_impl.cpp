@@ -1,9 +1,7 @@
 #include "input_component_impl.hpp"
-#include "math_helper.hpp"
 #include <game_properties.hpp>
-#include "lerp.hpp"
-
-#include <iostream>
+#include <lerp.hpp>
+#include <math_helper.hpp>
 
 InputComponentImpl::InputComponentImpl(std::shared_ptr<jt::KeyboardInterface> keyboardInterface)
     : m_keyboard { keyboardInterface }
@@ -12,16 +10,18 @@ InputComponentImpl::InputComponentImpl(std::shared_ptr<jt::KeyboardInterface> ke
 
 void InputComponentImpl::updateMovement(InputTargetInterface& target, float const elapsed)
 {
-    auto const boostPressed = m_keyboard->pressed(jt::KeyCode::LShift) || m_keyboard->pressed(jt::KeyCode::Space);
-    auto const boostJustPressed = m_keyboard->justPressed(jt::KeyCode::LShift) || m_keyboard->justPressed(jt::KeyCode::Space);
+    auto const boostPressed
+        = m_keyboard->pressed(jt::KeyCode::LShift) || m_keyboard->pressed(jt::KeyCode::Space);
+    auto const boostJustPressed = m_keyboard->justPressed(jt::KeyCode::LShift)
+        || m_keyboard->justPressed(jt::KeyCode::Space);
     auto boost = false;
-    auto maxVelocity = GP::playerMaxVelocity;
+    auto maxVelocity = GP::playerMaxVelocity * m_maxVelocityFactor;
     if (boostPressed) {
         if (m_boostNitro > 0) {
             m_timeSinceShiftPressed = 0.0f;
             boost = true;
             m_boostNitro -= elapsed;
-            maxVelocity = GP::playerMaxVelocityWhenBoosting;
+            maxVelocity = GP::playerMaxVelocityWhenBoosting * m_maxVelocityFactor;
         }
     } else {
         m_timeSinceShiftPressed += elapsed;
@@ -35,13 +35,16 @@ void InputComponentImpl::updateMovement(InputTargetInterface& target, float cons
     if (boost) {
         rotationSpeed = GP::playerRotationStrengthAtBoost;
     } else {
-        const auto velocity = jt::MathHelper::length(target.getVelocity());
+        auto const velocity = jt::MathHelper::length(target.getVelocity());
         if (velocity < GP::playerMaxVelocity) {
-            const auto t = velocity / GP::playerMaxVelocity;
-            rotationSpeed = jt::Lerp::linear(GP::playerRotationStrengthAtMinSpeed, GP::playerRotationStrengthAtMaxSpeed, t);
+            auto const t = velocity / GP::playerMaxVelocity;
+            rotationSpeed = jt::Lerp::linear(
+                GP::playerRotationStrengthAtMinSpeed, GP::playerRotationStrengthAtMaxSpeed, t);
         } else {
-            const auto t = (velocity - GP::playerMaxVelocity) / (GP::playerMaxVelocityWhenBoosting - GP::playerMaxVelocity);
-            rotationSpeed = jt::Lerp::linear(GP::playerRotationStrengthAtMaxSpeed, GP::playerRotationStrengthAtBoost, t);
+            auto const t = (velocity - GP::playerMaxVelocity)
+                / (GP::playerMaxVelocityWhenBoosting - GP::playerMaxVelocity);
+            rotationSpeed = jt::Lerp::linear(
+                GP::playerRotationStrengthAtMaxSpeed, GP::playerRotationStrengthAtBoost, t);
         }
     }
 
@@ -91,3 +94,5 @@ void InputComponentImpl::updateMovement(InputTargetInterface& target, float cons
 float InputComponentImpl::getRotationAngle() { return rotationAngle; }
 
 float InputComponentImpl::getBoostNitro() const { return m_boostNitro; }
+
+void InputComponentImpl::setMaxVelocityFactor(float factor) { m_maxVelocityFactor = factor; }

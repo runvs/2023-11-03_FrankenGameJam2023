@@ -10,6 +10,7 @@ public:
     virtual void updateMovement(InputTargetInterface& target, float const elapsed) = 0;
     virtual float getRotationAngle() = 0;
     virtual float getBoostNitro() const = 0;
+    virtual void setMaxVelocityFactor(float factor) = 0;
 };
 
 #endif // JAMTEMPLATE_INPUT_COMPONENT_INTERFACE_HPP
