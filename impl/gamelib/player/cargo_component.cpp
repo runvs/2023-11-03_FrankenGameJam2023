@@ -9,12 +9,14 @@ void CargoComponent::addFruit(std::string const& fruit)
     }
 }
 
-void CargoComponent::removeFruit(std::string const& fruit)
+void CargoComponent::removeAllFruits() { m_fruits = 0; }
+
+void CargoComponent::removeFruits(int number)
 {
-    if (m_fruits <= 0) {
-        return;
+    m_fruits -= number;
+    if (m_fruits < 0) {
+        m_fruits = 0;
     }
-    --m_fruits;
 }
 
 int CargoComponent::getNumberOfFruits() const { return m_fruits; }

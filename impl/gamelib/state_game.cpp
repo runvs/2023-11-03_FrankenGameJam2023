@@ -75,7 +75,6 @@ void StateGame::createPlayer()
 {
     m_player = std::make_shared<Player>(m_world);
 
-    // TODO spawn at correct harbor
     for (auto& h : *m_harbors) {
         auto harbor = h.lock();
         if (harbor->isOffering()) {
@@ -215,13 +214,12 @@ void StateGame::updateHarbors(float const /*elapsed*/)
             } else {
                 if (m_player->getCargo().getNumberOfFruits() > 0) {
                     if (harbor->canBeInteractedWith()) {
-                        // TODO check if special fruit requested
-                        m_player->getCargo().removeFruit("");
+                        auto const numberOfFruits = m_player->getCargo().getNumberOfFruits();
+                        m_player->getCargo().removeAllFruits();
 
-                        m_hud->getObserverScoreP1()->notify(
-                            m_player->getCargo().getNumberOfFruits());
+                        m_hud->getObserverScoreP1()->notify(0);
 
-                        m_points += 1;
+                        m_points += numberOfFruits;
                         m_hud->getObserverScoreP2()->notify(m_points);
 
                         harbor->deliverFruit();
@@ -260,9 +258,7 @@ void StateGame::updateMonkeys()
                 monkey->attack();
 
                 if (m_player->getCargo().getNumberOfFruits() > 0) {
-                    for (auto i = 0; i != 2; ++i) {
-                        m_player->getCargo().removeFruit("");
-                    }
+                    m_player->getCargo().removeFruits(2);
                     m_hud->getObserverScoreP1()->notify(m_player->getCargo().getNumberOfFruits());
                     m_dropFruitPS->fire(4, m_player->getPosition());
                 }

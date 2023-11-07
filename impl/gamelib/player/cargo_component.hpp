@@ -6,7 +6,8 @@
 class CargoComponent {
 public:
     void addFruit(std::string const& fruit);
-    void removeFruit(std::string const& fruit);
+    void removeFruits(int number);
+    void removeAllFruits();
 
     int getNumberOfFruits() const;
 

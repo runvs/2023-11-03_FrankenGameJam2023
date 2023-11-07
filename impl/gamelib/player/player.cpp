@@ -86,8 +86,7 @@ void Player::doUpdate(float const elapsed)
         m_graphics->getDrawable()->getPosition() + jt::Vector2f { 16.0f, 0.0f });
     m_NitroBar->setCurrentValue(m_input->getBoostNitro());
     m_NitroBar->update(elapsed);
-
-    // TODO place behind player
+    
     m_trailingWaves->update(elapsed);
     m_trailingWaves->setPosition(getPosition());
     if (jt::MathHelper::lengthSquared(getVelocity()) > 70.0f * 70.0f) {
