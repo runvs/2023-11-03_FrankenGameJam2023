@@ -37,6 +37,8 @@ public:
     void doDrawFlash(std::shared_ptr<jt::RenderTargetLayer> sptr) const override;
     void doDrawShadow(std::shared_ptr<jt::RenderTargetLayer> sptr) const override;
 
+    /// Get map size in pixel
+    //// \returns map size in pixel
     jt::Vector2f getMapSizeInPixel() const;
 
 private:

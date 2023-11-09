@@ -56,3 +56,10 @@ void jt::Waves::doDraw() const
         a->draw(renderTarget());
     }
 }
+
+void jt::Waves::setScreenSizeHint(jt::Vector2f const& screenSize)
+{
+    for (auto& a : m_animations) {
+        a->setScreenSizeHint(screenSize);
+    }
+}

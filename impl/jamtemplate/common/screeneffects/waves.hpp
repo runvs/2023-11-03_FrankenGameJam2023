@@ -11,6 +11,8 @@ public:
     Waves(std::string const& filename, jt::Rectf const& size, std::vector<jt::Rectf> const& exclude,
         int count);
 
+    void setScreenSizeHint(jt::Vector2f const& screenSize);
+
 private:
     void doCreate() override;
     void doUpdate(float const elapsed) override;

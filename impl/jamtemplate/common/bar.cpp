@@ -26,7 +26,6 @@ jt::Bar::Bar(
         m_shapeProgress->setPosition(jt::Vector2f { 0 + 1, m_height });
     }
     m_shapeProgress->setColor(jt::colors::White);
-    //    m_shapeProgress->setIgnoreCamMovement(true);
 }
 
 void jt::Bar::setFrontColor(jt::Color const& col) { m_shapeProgress->setColor(col); }
